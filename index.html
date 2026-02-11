@@ -3,71 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Alembro - Desenvolvimento de Softwares, Sistemas e Sites">
-    <meta name="author" content="Alembro">
-    <title>Alembro | Desenvolvimento de Softwares, Sistemas e Sites</title>
+    <title>Alembro | Tech Solutions</title>
     <link rel="icon" href="favicon.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <div class="logo">
-            <h1>Alembro</h1>
-            <p>Desenvolvimento de Softwares, Sistemas e Sites</p>
-        </div>
-        <nav>
-            <ul>
-                <li><a href="#sobre">Sobre</a></li>
+        <nav class="container">
+            <div class="logo">
+                <img src="favicon.png" alt="Logo Alembro" class="logo-img">
+                <div class="logo-text">
+                    <h1>Alembro</h1>
+                    <span>Tech & Systems</span>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#hero">Sobre</a></li>
                 <li><a href="#servicos">Serviços</a></li>
-                <li><a href="#contato">Contato</a></li>
+                <li><a href="#contato" class="btn-secondary">Contato</a></li>
             </ul>
         </nav>
     </header>
 
     <section id="hero">
-        <div class="hero-content">
-            <h2>Transformando ideias em soluções digitais.</h2>
-            <p>Na Alembro, criamos soluções personalizadas para o seu negócio crescer.</p>
-            <a href="#contato" class="btn">Entre em contato</a>
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <div class="badge-group">
+                    <span class="badge b-azul">Escalabilidade</span>
+                    <span class="badge b-roxo">Robustez</span>
+                    <span class="badge b-rust">Performance</span>
+                </div>
+                <h2>Transformando ideias em <span class="gradient-text">soluções brutais.</span></h2>
+                <p>Desenvolvemos sistemas robustos, aplicativos nativos e experiências web de alta performance. Transformamos sua visão em engenharia de ponta.</p>
+                <div class="hero-btns">
+                    <a href="#contato" class="btn-primary">Iniciar Projeto</a>
+                    <a href="#servicos" class="btn-outline">Ver Serviços</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="code-card">
+<pre><code><span class="purple">pub fn</span> <span class="blue">initialize</span>() -> Status {
+    <span class="purple">let</span> latency = <span class="blue">"1.2ms"</span>;
+    <span class="purple">let</span> uptime = <span class="blue">"99.99%"</span>;
+    <span class="purple">let</span> safety = <span class="blue">"Rust-Powered"</span>;
+    
+    <span class="yellow">println!</span>(<span class="blue">"Init Alembro..."</span>);
+}</code></pre>
+                </div>
+            </div>
         </div>
     </section>
 
-    <section id="sobre">
-        <h2>Sobre nós</h2>
-        <p>A Alembro é uma empresa especializada no desenvolvimento de soluções digitais para empresas de todos os tamanhos. Criamos sistemas, sites e softwares sob medida para otimizar o seu negócio e alcançar seus objetivos de forma eficaz e inovadora.</p>
-    </section>
-
     <section id="servicos">
-        <h2>Nossos Serviços</h2>
-        <div class="services">
-            <div class="service">
-                <h3>Desenvolvimento de Software</h3>
-                <p>Criamos soluções customizadas para a sua empresa, com foco na eficiência e inovação.</p>
+        <div class="container">
+            <div class="section-header">
+                <h2>Nossos Serviços</h2>
+                <p>Engenharia de software de alta performance para negócios que não podem parar.</p>
             </div>
-            <div class="service">
-                <h3>Desenvolvimento de Sistemas</h3>
-                <p>Sistemas web, de gestão e automação para facilitar os processos do seu negócio.</p>
-            </div>
-            <div class="service">
-                <h3>Criação de Sites</h3>
-                <p>Desenvolvimento de sites modernos, responsivos e de fácil navegação para sua empresa.</p>
+            <div class="services-grid">
+                <div class="service-card">
+                    <i class="fas fa-network-wired"></i>
+                    <h3>Ecossistemas Digitais</h3>
+                    <p>Aplicações Web e Mobile escaláveis que crescem com sua demanda, utilizando Vue e Flutter para uma presença onipresente.</p>
+                </div>
+
+                <div class="service-card">
+                    <i class="fas fa-server"></i>
+                    <h3>Sistemas de Missão Crítica</h3>
+                    <p>Arquiteturas sólidas para ERPs e automações que garantem a integridade dos dados e a continuidade do seu negócio sob qualquer carga.</p>
+                </div>
+
+                <div class="service-card">
+                    <i class="fas fa-microchip"></i>
+                    <h3>Motores de Alto Desempenho</h3>
+                    <p>Engenharia de baixo nível com Rust para processamento massivo, baixa latência e otimização máxima de recursos.</p>
+                </div>
             </div>
         </div>
     </section>
 
     <section id="contato">
-        <h2>Contato</h2>
-        <p>Entre em contato para saber mais sobre como podemos ajudar a sua empresa a crescer.</p>
-        <form action="mailto:contato@alembro.com.br" method="post" enctype="text/plain">
-            <input type="text" name="nome" placeholder="Seu Nome" required>
-            <input type="email" name="email" placeholder="Seu E-mail" required>
-            <textarea name="mensagem" placeholder="Sua Mensagem" required></textarea>
-            <button type="submit">Enviar</button>
-        </form>
+        <div class="container contact-container">
+            <div class="contact-info">
+                <h2>Vamos conversar?</h2>
+                <p>Mande sua ideia e nós cuidamos da engenharia.</p>
+            </div>
+            <form id="contact-form">
+                <div class="input-group">
+                    <input type="text" placeholder="Nome" required>
+                    <input type="email" placeholder="E-mail" required>
+                </div>
+                <textarea placeholder="Como podemos ajudar?" rows="5" required></textarea>
+                <button type="submit" class="btn-primary">Enviar Mensagem</button>
+            </form>
+        </div>
     </section>
 
     <footer>
-        <p>&copy; 2025 Alembro - Todos os direitos reservados.</p>
+        <div class="container">
+            <p>&copy; 2026 Alembro.</p>
+        </div>
     </footer>
 </body>
 </html>
