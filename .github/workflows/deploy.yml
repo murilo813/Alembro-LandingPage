@@ -16,12 +16,10 @@ jobs:
 
       - name: Inject Drive Link
         run: |
-          # Procura o placeholder e substitui pelo link secreto do Drive
-          # Usamos o find para garantir que ele ache o download.html onde quer que esteja
           find . -name "*.html" -exec sed -i 's|{{DRIVE_LINK}}|${{ secrets.DRIVE_LINK }}|g' {} +
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: .
-          branch: gh-pages # O site "processado" vai para cá
+          branch: gh-pages 
