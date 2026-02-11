@@ -1,0 +1,11 @@
+<head>
+    <title>Baixando App...</title>
+    <meta http-equiv="refresh" content="0; url={{DRIVE_LINK}}">
+</head>
+<body>
+    <script>
+        const directDownloadUrl = "{{DRIVE_LINK}}";
+        window.location.href = directDownloadUrl;
+        setTimeout(() => { window.location.href = "../index.html"; }, 2000);
+    </script>
+</body>
