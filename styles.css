@@ -276,7 +276,35 @@ footer {
 
 /* responsividade */
 @media (max-width: 768px) {
-    #hero h2 { font-size: 2.5rem; }
-    .hero-grid { grid-template-columns: 1fr; }
-    .input-group { grid-template-columns: 1fr; }
+    nav {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .nav-links {
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+        #hero {
+        padding: 40px 0 60px 0;
+        text-align: center;
+    }
+    .hero-grid { 
+        grid-template-columns: 1fr; 
+        gap: 2.5rem;
+    }
+    .badge-group {
+        justify-content: center;
+    }
+    #hero h2 { 
+        font-size: 2.5rem; 
+    }
+        .code-card {
+        padding: 1.5rem;
+        font-size: 0.85rem;
+        overflow-x: auto;
+    }
+        .input-group { 
+        grid-template-columns: 1fr; 
+    }
 }

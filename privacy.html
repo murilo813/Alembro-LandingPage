@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidade | Alembro</title>
+    <link rel="icon" href="favicon.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .privacy-content {
+            background: var(--bg-card);
+            padding: 3rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin: 40px auto;
+            max-width: 900px;
+        }
+
+        .privacy-content h1 {
+            margin-bottom: 0.5rem;
+        }
+
+        .privacy-content .date {
+            color: var(--primary);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            display: block;
+        }
+
+        .privacy-content h2 {
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            font-size: 1.4rem;
+        }
+
+        .privacy-content p {
+            margin-bottom: 1rem;
+            color: var(--text-dim);
+            text-align: justify;
+        }
+
+        .privacy-content ul {
+            padding-left: 20px;
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+        }
+
+        .privacy-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .privacy-content strong {
+            color: var(--text-main);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <img src="favicon.png" alt="Logo Alembro" class="logo-img">
+                <div class="logo-text">
+                    <h1>Alembro</h1>
+                    <span>Tech & Systems</span>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Voltar para o Site</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="privacy-content">
+            <h1>Política de Privacidade e Tratamento de Dados</h1>
+            <span class="date">Última atualização: 22 de abril de 2026</span>
+
+            <p>A <strong>Alembro</strong> tem o compromisso com a transparência, a privacidade e a
+                segurança dos dados de seus clientes. Esta política descreve como realizamos o tratamento de dados
+                pessoais de acordo com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018 - LGPD).</p>
+
+            <h2>1. Papéis e Responsabilidades (LGPD)</h2>
+            <p>No escopo de nossos serviços de software e integração comercial:</p>
+            <ul>
+                <li><strong>A Empresa Contratante (Cliente da Alembro):</strong> Atua como
+                    <strong>Controladora</strong>, detendo a propriedade e as decisões sobre os dados de seus próprios
+                    clientes, vendedores e parceiros integrados.</li>
+                <li><strong>A Alembro:</strong> Atua como <strong>Operadora</strong>, realizando o processamento,
+                    armazenamento e integração dos dados estritamente para a finalidade de automação de pedidos e
+                    consulta de informações comerciais determinadas pela Controladora.</li>
+            </ul>
+
+            <h2>2. Dados Processados e Finalidade</h2>
+            <p>A Alembro processa os seguintes grupos de dados exclusivamente para as finalidades descritas abaixo, não
+                utilizando essas informações para marketing de terceiros ou venda de dados:</p>
+            <ul>
+                <li><strong>Dados Cadastrais (Nome, CPF/CNPJ, Endereço):</strong> Utilizados para a identificação de
+                    clientes e emissão correta de pedidos.</li>
+                <li><strong>Dados Financeiros (Contas a Receber, Limites de Crédito, Saldo Devedor):</strong>
+                    Processados para suporte à decisão de venda pelos usuários do sistema, prevenção à inadimplência e
+                    gestão de risco de crédito pela empresa Controladora.</li>
+                <li><strong>Dados de Estoque e Preços:</strong> Sincronizados para viabilizar a oferta e venda de
+                    produtos em campo.</li>
+            </ul>
+
+            <h2>3. Segurança da Informação</h2>
+            <p>Alembro implementa rigorosas camadas de proteção em sua arquitetura de engenharia para garantir a
+                integridade e confidencialidade das informações:</p>
+            <ul>
+                <li><strong>Criptografia em Trânsito:</strong> Toda comunicação entre os aplicativos móveis, servidores
+                    centrais e integradores locais é realizada via protocolo seguro HTTPS (TLS/SSL).</li>
+                <li><strong>Isolamento de Dados (Multi-tenancy):</strong> Utilização de políticas de segurança ao nível
+                    de linha (RLS) nos bancos de dados. Os dados de uma empresa jamais são acessados por usuários de
+                    outra.</li>
+                <li><strong>Integridade do Aplicativo:</strong> Validação de assinatura do APK. O acesso é bloqueado
+                    caso a assinatura do app não corresponda à versão oficial homologada.</li>
+                <li><strong>Controle de Dispositivos:</strong> Acesso restrito a dispositivos autorizados e vinculados
+                    por ID único (Device ID).</li>
+            </ul>
+
+            <h2>4. Gestão de Acessos e Dispositivos</h2>
+            <p>A criação, alteração ou exclusão de usuários é gerida sob demanda da empresa Controladora. Em caso de
+                desligamento de um colaborador, a Alembro realiza o bloqueio imediato do acesso e a limpeza de dados
+                sensíveis armazenados localmente no dispositivo móvel (<em>remote wipe</em>) assim que informada.</p>
+
+            <h2>5. Retenção e Descarte de Dados</h2>
+            <p>Os dados processados permanecem armazenados em nossos servidores de nuvem de forma segura e criptografada
+                apenas durante a vigência do contrato com a empresa Controladora. Após o encerramento da prestação de
+                serviços por um período superior a 30 (trinta) dias, a Alembro realiza a <strong>exclusão permanente e
+                    definitiva</strong> de todos os dados pessoais e comerciais de sua base central, ressalvada a guarda
+                estritamente necessária para cumprimento de obrigações legais.</p>
+
+            <h2>6. Contato</h2>
+            <p>Caso tenha dúvidas sobre esta política, sobre os sistemas da Alembro ou precise exercer direitos
+                relacionados aos seus dados, entre em contato através do formulário oficial na nossa página inicial.</p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container"
+            style="display: flex; flex-direction: column; gap: 10px; align-items: center; padding-bottom: 20px;">
+            <p>&copy; 2026 Alembro.</p>
+        </div>
+    </footer>
+</body>
+
+</html>
