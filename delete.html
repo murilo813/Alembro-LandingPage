@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excluir Conta | Alembro</title>
+    <link rel="icon" href="favicon.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .delete-container {
+            background: var(--bg-card);
+            padding: 3rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin: 40px auto;
+            max-width: 700px;
+        }
+
+        .delete-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .delete-header h1 {
+            color: #ef4444;
+            /* Vermelho danger */
+            margin-bottom: 0.5rem;
+        }
+
+        .delete-header p {
+            color: var(--text-dim);
+        }
+
+        /* Controle de Passos (Steps) */
+        .step {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cartões de Escolha */
+        .choice-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .choice-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .choice-card:hover {
+            border-color: var(--primary);
+            background: rgba(56, 189, 248, 0.05);
+            transform: translateY(-5px);
+        }
+
+        .choice-card i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .choice-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .choice-card p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        /* Formulários e Botões */
+        .form-container {
+            background: #0f172a;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+            margin-top: 1rem;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-back {
+            background: transparent;
+            color: var(--text-dim);
+            border: 1px solid var(--text-dim);
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-back:hover {
+            color: white;
+            border-color: white;
+        }
+
+        .success-box {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        .success-box i {
+            font-size: 4rem;
+            color: #10b981;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .choice-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .delete-container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <img src="favicon.png" alt="Logo Alembro" class="logo-img">
+                <div class="logo-text">
+                    <h1>Alembro</h1>
+                    <span>Tech & Systems</span>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Voltar para o Site</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="delete-container">
+            <div class="delete-header">
+                <h1>Solicitação de Exclusão</h1>
+                <p>Escolha a opção que melhor se aplica ao seu caso para remover seus dados de nossos sistemas.</p>
+            </div>
+
+            <div id="step-choice" class="step active">
+                <div class="choice-grid">
+                    <div class="choice-card" onclick="goToStep('step-login')">
+                        <i class="fas fa-user-check"></i>
+                        <h3>Tenho Acesso</h3>
+                        <p>Lembro do meu usuário e senha e quero excluir minha conta agora mesmo.</p>
+                    </div>
+                    <div class="choice-card" onclick="goToStep('step-manual')">
+                        <i class="fas fa-user-lock"></i>
+                        <h3>Perdi o Acesso</h3>
+                        <p>Não lembro meus dados ou não tenho mais o app. Quero solicitar via suporte.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step-login" class="step">
+                <button class="btn-back" onclick="goToStep('step-choice')"><i class="fas fa-arrow-left"></i>
+                    Voltar</button>
+                <div class="form-container">
+                    <h3 style="margin-bottom: 1rem;">Validação de Segurança</h3>
+                    <p style="color: var(--text-dim); margin-bottom: 1.5rem; font-size: 0.9rem;">
+                        Faça login para confirmar sua identidade. Nenhum dado será excluído nesta etapa.
+                    </p>
+                    <form id="form-login">
+                        <div class="input-group" style="grid-template-columns: 1fr; gap: 1rem;">
+                            <input type="text" id="username" placeholder="Usuário" required>
+                            <input type="password" id="password" placeholder="Senha" required>
+                        </div>
+                        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;"
+                            id="btn-login">Validar Identidade</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="step-confirm" class="step">
+                <div class="form-container" style="text-align: center; border-color: #ef4444;">
+                    <i class="fas fa-exclamation-triangle"
+                        style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
+                    <h3 style="margin-bottom: 1rem;">Tem certeza absoluta?</h3>
+                    <p style="color: var(--text-dim); margin-bottom: 1.5rem;">
+                        Esta ação irá desativar seu usuário imediatamente e agendar a exclusão permanente dos seus dados
+                        e histórico de acessos. <strong>Esta ação não pode ser desfeita.</strong>
+                    </p>
+                    <button class="btn-danger" id="btn-delete-final">Sim, Excluir Minha Conta</button>
+                    <button class="btn-back" style="margin-top: 1rem; width: 100%; justify-content: center;"
+                        onclick="goToStep('step-choice')">Cancelar e Voltar</button>
+                </div>
+            </div>
+
+            <div id="step-manual" class="step">
+                <button class="btn-back" onclick="goToStep('step-choice')"><i class="fas fa-arrow-left"></i>
+                    Voltar</button>
+                <div class="form-container">
+                    <h3 style="margin-bottom: 1rem;">Solicitação Manual</h3>
+                    <p style="color: var(--text-dim); margin-bottom: 1.5rem; font-size: 0.9rem;">
+                        Preencha os dados abaixo. Nossa equipe validará sua identidade com a empresa e procederá com a
+                        exclusão.
+                    </p>
+                    <form action="https://formspree.io/f/mqewgzqd" method="POST" id="form-manual">
+                        <input type="hidden" name="_subject" value="URGENTE: Solicitação de Exclusão de Conta (LGPD)">
+                        <div class="input-group" style="grid-template-columns: 1fr; gap: 1rem;">
+                            <input type="text" name="nome_completo" placeholder="Seu Nome Completo" required>
+                            <input type="text" name="usuario_app"
+                                placeholder="Qual era seu usuário no App? (Se lembrar)">
+                            <input type="text" name="empresa" placeholder="Nome da Empresa que você trabalhava"
+                                required>
+                            <input type="email" name="_replyto" placeholder="Seu E-mail atual para contato" required>
+                        </div>
+                        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;">Enviar
+                            Solicitação</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="step-success" class="step">
+                <div class="success-box">
+                    <i class="fas fa-check-circle"></i>
+                    <h2>Solicitação Recebida!</h2>
+                    <p style="color: var(--text-dim); margin-top: 1rem;">
+                        Sua conta foi processada para exclusão. Caso tenha feito a solicitação manual, entraremos em
+                        contato via e-mail em breve.
+                    </p>
+                    <a href="index.html" class="btn-outline" style="margin-top: 2rem; display: inline-block;">Voltar ao
+                        Início</a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="container"
+            style="display: flex; flex-direction: column; gap: 10px; align-items: center; padding-bottom: 20px;">
+            <p>&copy; 2026 Alembro.</p>
+            <a href="privacy.html"
+                style="color: var(--text-dim); text-decoration: none; font-size: 0.85rem; transition: 0.3s;">Política de
+                Privacidade</a>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE = 'https://weberp.alembro.com:8081';
+        let tempToken = null; 
+
+        function goToStep(stepId) {
+            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+            document.getElementById(stepId).classList.add('active');
+        }
+
+        document.getElementById('form-login').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-login');
+            btn.innerText = "Validando...";
+            btn.disabled = true;
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/verify-for-deletion`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    goToStep('step-confirm');
+                } else {
+                    alert(data.message || 'Erro ao validar credenciais.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Erro de conexão com o servidor.');
+            } finally {
+                btn.innerText = "Validar Identidade";
+                btn.disabled = false;
+            }
+        };
+
+        document.getElementById('btn-delete-final').onclick = async () => {
+            const btn = document.getElementById('btn-delete-final');
+            btn.innerText = "Excluindo...";
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE}/delete-account`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    goToStep('step-success');
+                } else {
+                    alert(data.message || 'Erro ao excluir a conta.');
+                    btn.innerText = "Sim, Excluir Minha Conta";
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Erro de comunicação. Tente novamente.');
+                btn.innerText = "Sim, Excluir Minha Conta";
+                btn.disabled = false;
+            }
+        };
+
+        document.getElementById('form-manual').onsubmit = async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const btn = form.querySelector('button');
+            btn.innerText = "Enviando...";
+            btn.disabled = true;
+
+            try {
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (response.ok) {
+                    goToStep('step-success');
+                    form.reset();
+                } else {
+                    alert('Erro ao enviar solicitação. Tente novamente mais tarde.');
+                }
+            } catch (error) {
+                alert('Erro de conexão.');
+            } finally {
+                btn.innerText = "Enviar Solicitação";
+                btn.disabled = false;
+            }
+        };
+    </script>
+</body>
+
+</html>
