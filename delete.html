@@ -315,6 +315,7 @@
                 const data = await response.json();
 
                 if (response.ok) {
+                    window.localStorage.setItem('temp_token', data.token);
                     goToStep('step-confirm');
                 } else {
                     alert(data.message || 'Erro ao validar credenciais.');
@@ -334,10 +335,13 @@
             btn.disabled = true;
 
             try {
+                const token = window.localStorage.getItem('temp_token');
                 const response = await fetch(`${API_BASE}/delete-account`, {
                     method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include'
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    }
                 });
 
                 const data = await response.json();
