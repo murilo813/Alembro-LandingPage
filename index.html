@@ -4,87 +4,1000 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alembro | Tech Solutions</title>
-    <link rel="icon" href="favicon.png" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>Alembro | Soluções em Gestão e Vendas</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Montserrat:wght@800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        :root {
+            --bg-color: #0f1115;
+            --bg-card: #1a1d24;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent: #8b5cf6;
+            --success: #10b981;
+            --border: #2dd4bf20;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: rgba(15, 17, 21, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: color 0.3s, background 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-block;
+        }
+
+        .nav-links a.btn-primary:hover {
+            color: #fff;
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+            display: inline-block;
+        }
+
+        .btn-outline:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        #hero {
+            padding: 100px 0 60px 0;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-content h2 {
+            font-size: 4rem;
+            line-height: 1.1;
+            margin-bottom: 25px;
+            font-weight: 800;
+        }
+
+        .hero-content p {
+            color: var(--text-dim);
+            font-size: 1.25rem;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .metrics-bar {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 30px 0;
+            margin-bottom: 80px;
+        }
+
+        .metrics-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .metric-item {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .metric-item h4 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .metric-item p {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .metric-divider {
+            width: 1px;
+            height: 40px;
+            background: var(--border);
+        }
+
+        .slogan-section {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 80px auto;
+            padding: 0 20px;
+        }
+
+        .slogan-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .slogan-section p {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+        }
+
+        #solucoes {
+            margin-bottom: 100px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: var(--bg-card);
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--primary);
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: grid;
+        }
+
+        .tab-text h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        .tab-text p {
+            color: var(--text-dim);
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .solucao-lista {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .solucao-lista li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-main);
+        }
+
+        .solucao-lista i {
+            color: var(--success);
+            font-size: 1.2rem;
+        }
+
+        .image-placeholder {
+            background: linear-gradient(135deg, #1a1d24, #2a2d34);
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            height: 450px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dim);
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .erp-tag {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.15);
+            color: #a78bfa;
+            font-size: 0.85rem;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .featured-product {
+            background: linear-gradient(145deg, var(--bg-card) 0%, rgba(59, 130, 246, 0.1) 100%);
+            border: 1px solid var(--primary);
+            border-radius: 16px;
+            padding: 60px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 100px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .featured-content {
+            flex: 1;
+        }
+
+        .featured-badge {
+            background: var(--primary);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            display: inline-block;
+            letter-spacing: 1px;
+        }
+
+        .featured-content h3 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .featured-content p {
+            color: var(--text-dim);
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .featured-list {
+            list-style: none;
+            margin-bottom: 35px;
+        }
+
+        .featured-list li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.05rem;
+        }
+
+        .featured-list i {
+            color: var(--success);
+            font-size: 1.2rem;
+        }
+
+        .stores-badges-center {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .reviews-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-card);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 1rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stars {
+            color: #fbbf24;
+        }
+
+        .testimonials {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            padding-bottom: 100px;
+        }
+
+        .testimonial-card {
+            background: var(--bg-card);
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            color: var(--text-dim);
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        #publico {
+            padding: 80px 0;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+            overflow: hidden;
+        }
+
+        #publico h2 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        #publico>p {
+            color: var(--text-dim);
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .carousel-viewport {
+            width: 100%;
+            padding: 40px 0;
+            position: relative;
+        }
+
+        .carousel-track {
+            display: flex;
+            align-items: center;
+            width: max-content;
+        }
+
+        .publico-card {
+            flex: 0 0 320px;
+            margin: 0 15px;
+            padding: 40px 30px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: var(--bg-color);
+            transition: all 0.5s ease;
+            opacity: 0.4;
+            transform: scale(0.85);
+            text-align: center;
+        }
+
+        .publico-card.active {
+            opacity: 1;
+            transform: scale(1.05);
+            border-color: var(--primary);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.2);
+            background: linear-gradient(145deg, var(--bg-color) 0%, rgba(59, 130, 246, 0.05) 100%);
+            z-index: 2;
+        }
+
+        .publico-card i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+
+        .publico-card.active i {
+            transform: scale(1.1);
+            color: var(--accent);
+        }
+
+        .publico-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+
+        .publico-card p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+
+        #contato {
+            padding: 100px 0;
+        }
+
+        .contact-container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .contact-container h2 {
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+        }
+
+        .contact-container p {
+            color: var(--text-dim);
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            text-align: left;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 18px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .form-btn-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 30px;
+            border-top: 1px solid var(--border);
+            color: var(--text-dim);
+        }
+
+        footer a {
+            color: var(--text-dim);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: var(--primary);
+        }
+
+        @media (max-width: 1024px) {
+            .hero-content h2 {
+                font-size: 3.5rem;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .hero-content h2 {
+                font-size: 2.8rem;
+            }
+
+            .tab-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .image-placeholder {
+                height: 350px;
+            }
+
+            .featured-product {
+                flex-direction: column;
+                padding: 40px 20px;
+                text-align: center;
+            }
+
+            .featured-list li {
+                justify-content: center;
+            }
+
+            .metric-divider {
+                display: none;
+            }
+
+            .input-group {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .metrics-container {
+                gap: 30px;
+            }
+
+            .metric-item {
+                flex: 0 0 45%;
+            }
+
+            .hero-btns {
+                flex-direction: column;
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+
+            .hero-btns a {
+                width: 100%;
+                text-align: center;
+            }
+
+            .publico-card {
+                flex: 0 0 280px;
+                margin: 0 10px;
+                padding: 30px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h2 {
+                font-size: 2.2rem;
+            }
+
+            .metric-item {
+                flex: 0 0 100%;
+            }
+
+            .stores-badges-center {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .reviews-badge {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 
 <body>
     <header>
         <nav class="container">
             <div class="logo">
-                <img src="favicon.png" alt="Logo Alembro" class="logo-img">
+                <img src="favicon.png" alt="" class="logo-img" style="width: 32px; display: none;">
                 <div class="logo-text">
                     <h1>Alembro</h1>
-                    <span>Tech & Systems</span>
                 </div>
             </div>
             <ul class="nav-links">
-                <li><a href="#hero">Sobre</a></li>
-                <li><a href="#servicos">Serviços</a></li>
-                <li><a href="#contato" class="btn-secondary">Contato</a></li>
+                <li><a href="#solucoes">Soluções</a></li>
+                <li><a href="#depoimentos">Clientes</a></li>
+                <li><a href="#contato" class="btn-primary">Fale com um Especialista</a></li>
             </ul>
         </nav>
     </header>
 
-    <section id="hero">
-        <div class="container hero-grid">
-            <div class="hero-content">
-                <div class="badge-group">
-                    <span class="badge b-azul">Escalabilidade</span>
-                    <span class="badge b-roxo">Robustez</span>
-                    <span class="badge b-rust">Performance</span>
-                </div>
-                <h2>Transformando ideias em <span class="gradient-text">soluções brutais.</span></h2>
-                <p>Desenvolvemos sistemas robustos, aplicativos nativos e experiências web de alta performance.
-                    Transformamos sua visão em engenharia de ponta.</p>
-                <div class="hero-btns">
-                    <a href="#contato" class="btn-primary">Iniciar Projeto</a>
-                    <a href="#servicos" class="btn-outline">Ver Serviços</a>
+    <section id="hero" class="container">
+        <div class="hero-content">
+            <h2>Acelere suas vendas e <span class="gradient-text">domine sua gestão.</span></h2>
+            <p>Aplicativos de força de vendas, controle de estoque e CRM. Soluções perfeitamente integradas ao seu ERP
+                atual ou operando de forma totalmente independente.</p>
+            <div class="hero-btns">
+                <a href="#solucoes" class="btn-primary">Explorar Soluções</a>
+                <a href="#contato" class="btn-outline">Agendar Demonstração</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="metrics-bar">
+        <div class="container metrics-container">
+            <div class="metric-item">
+                <h4>+R$ 16 Milhões</h4>
+                <p>Movimentados/ano no Alembro APP</p>
+            </div>
+            <div class="metric-divider"></div>
+            <div class="metric-item">
+                <h4>+4 Mil</h4>
+                <p>Pedidos pela nossa solução</p>
+            </div>
+            <div class="metric-divider"></div>
+            <div class="metric-item">
+                <h4>+5</h4>
+                <p>ERPs Integrados</p>
+            </div>
+            <div class="metric-divider"></div>
+            <div class="metric-item">
+                <h4>+100</h4>
+                <p>Usuários Ativos</p>
+            </div>
+            <div class="metric-divider"></div>
+            <div class="metric-item">
+                <h4>+7</h4>
+                <p>Clientes Operando</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="slogan-section">
+        <h2>A ponte definitiva entre o seu ERP e o sucesso em campo.</h2>
+        <p>Desenhado para empresas que não têm tempo a perder. Levamos a robustez do seu escritório diretamente para o
+            celular do seu time de vendas e logística, garantindo dados precisos em tempo real.</p>
+    </section>
+
+    <section id="solucoes" class="container">
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="openTab('tab-app')">Força de Vendas / CRM</button>
+            <button class="tab-btn" onclick="openTab('tab-weberp')">Gestão Administrativa (Web)</button>
+            <button class="tab-btn" onclick="openTab('tab-stock')">Controle de Estoque</button>
+        </div>
+
+        <div id="tab-app" class="tab-content active">
+            <div class="tab-text">
+                <div class="erp-tag"><i class="fas fa-sync"></i> 100% Integrado ao seu ERP</div>
+                <h3>Alembro APP</h3>
+                <p>O CRM de bolso definitivo para seus representantes. Dê adeus aos pedidos no papel e ao retrabalho
+                    noturno. Sua equipe fecha negócios de qualquer lugar com catálogo offline e sincronização
+                    inteligente.</p>
+                <ul class="solucao-lista">
+                    <li><i class="fas fa-check-circle"></i> Emissão rápida de pedidos online e offline</li>
+                    <li><i class="fas fa-check-circle"></i> Consulta de histórico e limites de crédito do cliente</li>
+                    <li><i class="fas fa-check-circle"></i> Catálogo digital integrado com políticas de desconto</li>
+                </ul>
+                <a href="#contato" class="btn-outline">Quero integrar meu time</a>
+            </div>
+            <div class="image-placeholder">
+                <i class="fas fa-mobile-alt"></i>
+                <h4>Mockup do Alembro APP</h4>
+                <p style="font-size: 0.85rem; margin-top: 10px;">[ Espaço reservado para a tela real do aplicativo ]</p>
+            </div>
+        </div>
+
+        <div id="tab-weberp" class="tab-content">
+            <div class="tab-text">
+                <div class="erp-tag"><i class="fas fa-sync"></i> 100% Integrado ao seu ERP</div>
+                <h3>Alembro WebERP</h3>
+                <p>O centro de comando da sua operação financeira e contábil. Centraliza contas, contratos e cheques
+                    para uma visão ampla e detalhada da saúde do seu negócio, mantendo integração total e bidirecional
+                    com o Alembro STOCK.</p>
+                <ul class="solucao-lista">
+                    <li><i class="fas fa-check-circle"></i> Visão ampla de contas, contratos e cheques em um só lugar
+                    </li>
+                    <li><i class="fas fa-check-circle"></i> Integração bilateral com o Alembro STOCK para análise de
+                        divergências</li>
+                    <li><i class="fas fa-check-circle"></i> Gestão completa de gastos veiculares e frota</li>
+                </ul>
+                <a href="#contato" class="btn-outline">Ver demonstração do painel</a>
+            </div>
+            <div class="image-placeholder" style="background: linear-gradient(135deg, #161b22, #1f2937);">
+                <i class="fas fa-laptop"></i>
+                <h4>Dashboard WebERP</h4>
+                <p style="font-size: 0.85rem; margin-top: 10px;">[ Espaço reservado para print do painel web ]</p>
+            </div>
+        </div>
+
+        <div id="tab-stock" class="tab-content">
+            <div class="tab-text">
+                <div class="erp-tag"><i class="fas fa-sync"></i> 100% Integrado ao seu ERP</div>
+                <h3>Alembro STOCK</h3>
+                <p>Agilidade e autonomia total para o seu armazém. Funciona totalmente offline com contagens validadas
+                    em tempo real, integrando-se perfeitamente ao WebERP para agendar contagens e auditar divergências
+                    de inventário.</p>
+                <ul class="solucao-lista">
+                    <li><i class="fas fa-check-circle"></i> Operação 100% offline para uso direto no galpão</li>
+                    <li><i class="fas fa-check-circle"></i> Contagens validadas e sincronizadas em tempo real</li>
+                    <li><i class="fas fa-check-circle"></i> Agendamento de inventários e cruzamento de dados com o
+                        WebERP</li>
+                </ul>
+                <a href="#contato" class="btn-outline">Otimizar minha logística</a>
+            </div>
+            <div class="image-placeholder" style="background: linear-gradient(135deg, #1f2937, #111827);">
+                <i class="fas fa-boxes"></i>
+                <h4>Tela do Alembro STOCK</h4>
+                <p style="font-size: 0.85rem; margin-top: 10px;">[ Espaço reservado para interface de estoque ]</p>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="container">
+        <div class="featured-product">
+            <div class="featured-content">
+                <span class="featured-badge">Lançamento</span>
+                <h3>Alembro <span style="color: var(--primary);">FLOW</span></h3>
+                <p>Ainda não possui um ERP? Sem problemas. O Alembro FLOW é nossa primeira solução 100% independente.
+                    Criada para estruturar e gerenciar seu negócio de ponta a ponta, sem depender de sistemas de
+                    terceiros para rodar.</p>
+                <ul class="featured-list">
+                    <li><i class="fas fa-check-circle"></i> Cadastro e gestão completa de Clientes e Estoque</li>
+                    <li><i class="fas fa-check-circle"></i> Motor próprio de Formas de Pagamento e Usuários</li>
+                    <li><i class="fas fa-check-circle"></i> Emissão ágil de Pedidos e Geração de Relatórios Gerenciais
+                    </li>
+                </ul>
+                <a href="#contato" class="btn-primary" style="padding: 15px 30px; font-size: 1.1rem;">Conheça a
+                    autonomia do FLOW</a>
+            </div>
+            <div class="image-placeholder"
+                style="flex: 1; border-color: var(--primary); background: rgba(59,130,246,0.05); min-height: 400px;">
+                <i class="fas fa-project-diagram" style="color: var(--primary);"></i>
+                <h4 style="color: var(--primary);">Ecossistema FLOW</h4>
+                <p style="font-size: 0.85rem; margin-top: 10px;">[ Espaço reservado para a identidade visual do FLOW ]
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="depoimentos" class="container">
+
+        <div class="stores-badges-center">
+            <div class="reviews-badge">
+                <span class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                        class="fas fa-star"></i><i class="fas fa-star"></i></span>
+                <span><strong>5/5</strong> Avaliações na <i class="fab fa-apple"
+                        style="font-size: 1.2em; margin-left: 4px; color: #fff;"></i> App Store</span>
+            </div>
+            <div class="reviews-badge">
+                <span class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                        class="fas fa-star"></i><i class="fas fa-star"></i></span>
+                <span><strong>5/5</strong> Avaliações na <i class="fab fa-google-play"
+                        style="font-size: 1.2em; margin-left: 4px; color: #3ddc84;"></i> Play Store</span>
+            </div>
+        </div>
+
+        <div class="section-header" style="margin-bottom: 40px;">
+            <h2>Quem usa, aprova.</h2>
+        </div>
+
+        <div class="testimonials">
+            <div class="testimonial-card">
+                <div class="stars" style="margin-bottom: 15px; font-size: 1.2rem;"><i class="fas fa-star"></i><i
+                        class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                        class="fas fa-star"></i></div>
+                <p class="testimonial-text">"O Alembro APP mudou radicalmente a rotina dos nossos representantes. A
+                    estabilidade é incrível e os pedidos caem direto no nosso ERP em segundos. Fim do retrabalho e dos
+                    erros de digitação."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">J</div>
+                    <div>
+                        <strong>João Silva</strong>
+                        <div style="font-size: 0.85rem; color: var(--text-dim);">Diretor Comercial - Distribuidora X
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="hero-visual">
-                <div class="code-card">
-                    <pre><code><span class="purple">pub fn</span> <span class="blue">initialize</span>() -> Status {
-    <span class="purple">let</span> latency = <span class="blue">"1.2ms"</span>;
-    <span class="purple">let</span> uptime = <span class="blue">"99.99%"</span>;
-    <span class="purple">let</span> safety = <span class="blue">"Rust-Powered"</span>;
-    
-    <span class="yellow">println!</span>(<span class="blue">"Init Alembro..."</span>);
-}</code></pre>
+            <div class="testimonial-card">
+                <div class="stars" style="margin-bottom: 15px; font-size: 1.2rem;"><i class="fas fa-star"></i><i
+                        class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                        class="fas fa-star"></i></div>
+                <p class="testimonial-text">"A conferência de estoque com o Alembro STOCK zerou nossos custos com
+                    devoluções por envio errado. A integração foi lisa e a equipe de logística aprendeu a usar no
+                    primeiro dia."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">M</div>
+                    <div>
+                        <strong>Maria Santos</strong>
+                        <div style="font-size: 0.85rem; color: var(--text-dim);">Gerente de Logística - Atacadão Y</div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="servicos">
+    <section id="publico">
         <div class="container">
-            <div class="section-header">
-                <h2>Nossos Serviços</h2>
-                <p>Engenharia de software de alta performance para negócios que não podem parar.</p>
-            </div>
-            <div class="services-grid">
-                <div class="service-card">
-                    <i class="fas fa-network-wired"></i>
-                    <h3>Ecossistemas Digitais</h3>
-                    <p>Aplicações Web e Mobile escaláveis que crescem com sua demanda, utilizando Vue e Flutter para uma
-                        presença onipresente.</p>
-                </div>
+            <h2>Para quem a Alembro foi feita?</h2>
+            <p>Soluções escaláveis desenhadas para diversos perfis de mercado.</p>
+        </div>
 
-                <div class="service-card">
-                    <i class="fas fa-server"></i>
-                    <h3>Sistemas de Missão Crítica</h3>
-                    <p>Arquiteturas sólidas para ERPs e automações que garantem a integridade dos dados e a continuidade
-                        do seu negócio sob qualquer carga.</p>
+        <div class="carousel-viewport">
+            <div class="carousel-track" id="publicoTrack">
+                <div class="publico-card">
+                    <i class="fas fa-truck-loading"></i>
+                    <h3>Atacadistas e Distribuidores</h3>
+                    <p>Agilidade para processar grandes volumes de pedidos e controle absoluto sobre o envio de
+                        mercadorias.</p>
                 </div>
-
-                <div class="service-card">
-                    <i class="fas fa-microchip"></i>
-                    <h3>Motores de Alto Desempenho</h3>
-                    <p>Engenharia de baixo nível com Rust para processamento massivo, baixa latência e otimização máxima
-                        de recursos.</p>
+                <div class="publico-card">
+                    <i class="fas fa-tractor"></i>
+                    <h3>Agropecuárias</h3>
+                    <p>Gestão completa para o comércio rural, maquinários e insumos, garantindo a entrega certa na hora
+                        do plantio.</p>
+                </div>
+                <div class="publico-card">
+                    <i class="fas fa-industry"></i>
+                    <h3>Indústrias</h3>
+                    <p>Conexão direta entre o chão de fábrica, estoque e os representantes de venda espalhados pelo
+                        país.</p>
+                </div>
+                <div class="publico-card">
+                    <i class="fas fa-briefcase"></i>
+                    <h3>Representantes Comerciais</h3>
+                    <p>Autonomia para consultar tabelas de preços, limites e fechar vendas offline direto do smartphone.
+                    </p>
+                </div>
+                <div class="publico-card">
+                    <i class="fas fa-store-alt"></i>
+                    <h3>Redes de Varejo</h3>
+                    <p>Gestão centralizada com o FLOW, integrando múltiplos pontos de venda e simplificando o
+                        backoffice.</p>
+                </div>
+                <div class="publico-card">
+                    <i class="fas fa-user-tie"></i>
+                    <h3>Autônomos</h3>
+                    <p>Controle financeiro, emissão de pedidos e gestão da carteira de clientes na palma da mão, sem
+                        burocracia.</p>
                 </div>
             </div>
         </div>
@@ -92,59 +1005,119 @@
 
     <section id="contato">
         <div class="container contact-container">
-            <div class="contact-info">
-                <h2>Vamos conversar?</h2>
-                <p>Mande sua ideia e nós cuidamos da engenharia.</p>
-            </div>
+            <h2>Pronto para escalar sua operação?</h2>
+            <p>Preencha os dados abaixo e entraremos em contato para entender o momento da sua empresa e mostrar a
+                solução ideal.</p>
+
             <form id="contact-form" action="https://formspree.io/f/mqewgzqd" method="POST">
                 <div class="input-group">
-                    <input type="text" name="nome" placeholder="Nome" required>
-                    <input type="email" name="_replyto" placeholder="E-mail" required>
+                    <input type="text" name="nome" placeholder="Seu Nome / Empresa" required>
+                    <input type="email" name="_replyto" placeholder="E-mail profissional" required>
                 </div>
-                <textarea name="mensagem" placeholder="Como podemos ajudar?" rows="5" required></textarea>
-
-                <input type="hidden" name="_subject" value="Novo contato via Landing Page Alembro">
-
-                <button type="submit" class="btn-primary">Enviar Mensagem</button>
+                <input type="text" name="telefone" placeholder="WhatsApp / Telefone" required>
+                <textarea name="mensagem"
+                    placeholder="Qual o seu principal desafio hoje? (Ex: Preciso integrar minha força de vendas ao ERP atual)"
+                    rows="5" required></textarea>
+                <input type="hidden" name="_subject" value="Novo Lead: Landing Page Alembro">
+                <div class="form-btn-container">
+                    <button type="submit" class="btn-primary"
+                        style="padding: 18px 40px; font-size: 1.1rem; width: 100%;">Solicitar Contato Comercial</button>
+                </div>
             </form>
         </div>
     </section>
 
     <footer>
-        <div class="container"
-            style="display: flex; flex-direction: column; gap: 10px; align-items: center; padding-bottom: 20px;">
-            <p>&copy; 2026 Alembro.</p>
-            <a href="privacy.html"
-                style="color: var(--text-dim); text-decoration: none; font-size: 0.85rem; transition: 0.3s;">Política de
-                Privacidade</a>
+        <div class="container" style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+            <p>&copy; 2026 Alembro. Todos os direitos reservados.</p>
+            <a href="privacy.html" style="font-size: 0.85rem;">Política de Privacidade</a>
         </div>
     </footer>
 
     <script>
-        const form = document.getElementById('contact-form');
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
 
+        const track = document.getElementById('publicoTrack');
+        const originalCards = Array.from(track.children);
+        const originalCount = originalCards.length;
+
+        for (let i = 0; i < 3; i++) {
+            originalCards.forEach(c => track.appendChild(c.cloneNode(true)));
+        }
+
+        let cardWidth = 0;
+        let activeIndex = originalCount;
+
+        function updateCarousel(useTransition = true) {
+            if (track.children.length === 0) return;
+
+            const firstCard = track.children[0];
+            const style = window.getComputedStyle(firstCard);
+            const margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight);
+            cardWidth = firstCard.offsetWidth + margin;
+
+            const viewport = document.querySelector('.carousel-viewport');
+            const viewportCenter = viewport.offsetWidth / 2;
+
+            const activeCardCenter = (activeIndex * cardWidth) + (cardWidth / 2);
+
+            const translateX = viewportCenter - activeCardCenter;
+
+            track.style.transition = useTransition ? 'transform 0.6s ease-in-out' : 'none';
+            track.style.transform = `translateX(${translateX}px)`;
+
+            Array.from(track.children).forEach((c, i) => {
+                if (i === activeIndex) {
+                    c.classList.add('active');
+                } else {
+                    c.classList.remove('active');
+                }
+            });
+        }
+
+        function moveNext() {
+            activeIndex++;
+            updateCarousel(true);
+
+            setTimeout(() => {
+                if (activeIndex >= originalCount * 2) {
+                    activeIndex -= originalCount;
+                    updateCarousel(false); 
+                }
+            }, 600);
+        }
+
+        window.addEventListener('resize', () => updateCarousel(false));
+        setTimeout(() => updateCarousel(false), 100);
+
+        setInterval(moveNext, 5000);
+
+        const form = document.getElementById('contact-form');
         form.onsubmit = async (e) => {
             e.preventDefault();
             const button = form.querySelector('button');
             const originalText = button.innerText;
 
-            button.innerText = "Enviando...";
+            button.innerText = "Enviando solicitação...";
             button.disabled = true;
 
             const formData = new FormData(form);
             const response = await fetch(form.action, {
                 method: 'POST',
                 body: formData,
-                headers: {
-                    'Accept': 'application/json'
-                }
+                headers: { 'Accept': 'application/json' }
             });
 
             if (response.ok) {
-                alert('Mensagem enviada com sucesso! Logo entraremos em contato.');
+                alert('Solicitação enviada com sucesso! Logo um especialista da Alembro entrará em contato.');
                 form.reset();
             } else {
-                alert('Ops! Tivemos um problema. Tente novamente mais tarde.');
+                alert('Ops! Tivemos um problema de conexão. Tente novamente.');
             }
 
             button.innerText = originalText;
