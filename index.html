@@ -566,8 +566,89 @@
             font-size: 0.95rem;
         }
 
+        #faq {
+            padding: 100px 0 40px 0;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .faq-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .faq-header p {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+        }
+
+        .faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question {
+            width: 100%;
+            text-align: left;
+            padding: 20px 25px;
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .faq-question:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .faq-question i {
+            color: var(--primary);
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active {
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.1);
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            background: rgba(15, 17, 21, 0.3);
+        }
+
+        .faq-answer p {
+            padding: 0 25px 25px 25px;
+            color: var(--text-dim);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
         #contato {
-            padding: 100px 0;
+            padding: 60px 0 100px 0;
         }
 
         .contact-container {
@@ -620,8 +701,19 @@
 
         .form-btn-container {
             display: flex;
-            justify-content: flex-end;
+            flex-direction: column;
+            align-items: center;
             margin-top: 10px;
+        }
+
+        .response-time {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
         }
 
         footer {
@@ -716,6 +808,10 @@
                 flex: 0 0 280px;
                 margin: 0 10px;
                 padding: 30px 20px;
+            }
+
+            .faq-header h2 {
+                font-size: 2rem;
             }
         }
 
@@ -817,7 +913,7 @@
             <div class="tab-text">
                 <div class="erp-tag"><i class="fas fa-sync"></i> 100% Integrado ao seu ERP</div>
                 <h3>Alembro APP</h3>
-                <p>O CRM de bolso definitivo para seus representantes. Dê adeus aos pedidos no papel e ao retrabalho
+                <p>O CRM de bolso definitivo para seus representatives. Dê adeus aos pedidos no papel e ao retrabalho
                     noturno. Sua equipe fecha negócios de qualquer lugar com catálogo offline e sincronização
                     inteligente.</p>
                 <ul class="solucao-lista">
@@ -1011,6 +1107,79 @@
         </div>
     </section>
 
+    <section id="faq" class="container">
+        <div class="faq-container">
+            <div class="faq-header">
+                <h2>Perguntas Frequentes</h2>
+                <p>Tire suas dúvidas e entenda como a Alembro pode se adaptar ao seu cenário.</p>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    Como funciona a integração com o ERP que eu já uso?
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Nós conectamos o Alembro diretamente ao banco de dados do seu ERP atual (seja via API, views
+                        customizadas ou banco espelho). Isso garante que o estoque, os limites de crédito e a tabela de
+                        preços do aplicativo estejam sempre idênticos aos do seu sistema principal, sem necessidade de
+                        recadastrar nada.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    O aplicativo funciona se o vendedor estiver sem internet?
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Sim! 100% offline. O vendedor faz uma carga de dados pela manhã e pode visitar clientes em áreas
+                        remotas ou galpões sem sinal. Ele consegue emitir o pedido e verificar preços. Assim que o
+                        celular recuperar a conexão, o aplicativo sincroniza automaticamente o pedido com a central.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    Alembro FLOW ou Alembro APP: Qual é o melhor para mim?
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Se você <strong>já possui um ERP</strong> (como Totvs, Sankhya, etc) e só quer melhorar o
+                        aplicativo dos seus vendedores na rua, a solução é o <strong>Alembro APP</strong>. Agora, se
+                        você <strong>ainda não tem nenhum sistema</strong> estruturado no escritório e quer organizar
+                        tudo do zero (cadastros, contas e vendas), o <strong>Alembro FLOW</strong> é a plataforma
+                        completa ideal para você.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    É necessário comprar servidores caros para rodar?
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Não. A arquitetura da Alembro é inteiramente em nuvem (Cloud). Você não precisa comprar hardware,
+                        se preocupar com manutenção de máquinas ou backups complexos. Nós gerenciamos a infraestrutura
+                        para que você foque apenas em vender.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">
+                    Consigo testar na prática antes de fechar negócio?
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Com certeza. Após agendarmos uma demonstração e entendermos o seu fluxo de trabalho, podemos
+                        liberar um ambiente de testes (Sandbox) para que sua equipe baixe o app nas lojas oficiais, crie
+                        pedidos simulados e veja a fluidez do sistema com os próprios olhos.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
     <section id="contato">
         <div class="container contact-container">
             <h2>Pronto para escalar sua operação?</h2>
@@ -1030,6 +1199,7 @@
                 <div class="form-btn-container">
                     <button type="submit" class="btn-primary"
                         style="padding: 18px 40px; font-size: 1.1rem; width: 100%;">Solicitar Contato Comercial</button>
+                    <span class="response-time"><i class="fas fa-bolt"></i> Responderemos em até 24 horas!</span>
                 </div>
             </form>
         </div>
@@ -1115,6 +1285,29 @@
         setTimeout(() => updateCarousel(false), 100);
 
         setInterval(moveNext, 5000);
+
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', () => {
+                const item = question.parentNode;
+                const answer = item.querySelector('.faq-answer');
+
+                document.querySelectorAll('.faq-item').forEach(otherItem => {
+                    if (otherItem !== item && otherItem.classList.contains('active')) {
+                        otherItem.classList.remove('active');
+                        otherItem.querySelector('.faq-answer').style.maxHeight = null;
+                    }
+                });
+
+                item.classList.toggle('active');
+
+                if (item.classList.contains('active')) {
+                    answer.style.maxHeight = answer.scrollHeight + "px";
+                } else {
+                    answer.style.maxHeight = null;
+                }
+            });
+        });
 
         const form = document.getElementById('contact-form');
         form.onsubmit = async (e) => {
