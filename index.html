@@ -865,6 +865,52 @@
                 justify-content: center;
             }
         }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+                filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.7));
+            }
+
+            50% {
+                transform: translateY(-12px);
+                filter: drop-shadow(0 40px 50px rgba(0, 0, 0, 0.5));
+            }
+
+            100% {
+                transform: translateY(0px);
+                filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.7));
+            }
+        }
+
+        .mockup-container-free {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: auto;
+            min-height: 450px;
+        }
+
+        .mockup-glow-free {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: var(--primary);
+            filter: blur(150px);
+            opacity: 0.35;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .mockup-img-free {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            animation: float 6s ease-in-out infinite;
+        }
     </style>
 </head>
 
@@ -980,10 +1026,11 @@
                     <a href="#contato" class="btn-outline">Ver demonstração do painel</a>
                 </div>
             </div>
-            <div class="image-placeholder" style="background: linear-gradient(135deg, #161b22, #1f2937);">
-                <i class="fas fa-laptop"></i>
-                <h4>Dashboard WebERP</h4>
-                <p style="font-size: 0.85rem; margin-top: 10px;">[ Espaço reservado para print do painel web ]</p>
+
+            <div class="mockup-container-free">
+                <div class="mockup-glow-free"></div>
+                <img src="weberplaptop.webp" alt="Dashboard Alembro WebERP" class="mockup-img-free" width="1200"
+                    height="819" loading="lazy">
             </div>
         </div>
 
