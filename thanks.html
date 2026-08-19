@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitação Enviada | Alembro</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+
+    <meta name="robots" content="noindex">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Montserrat:wght@800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #0f1115;
+            --bg-card: #1a1d24;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent: #8b5cf6;
+            --success: #10b981;
+            --border: #2dd4bf20;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            /* Remove o scroll */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            background: rgba(15, 17, 21, 0.9);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            /* Centraliza a logo */
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .logo h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            color: var(--success);
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .desc {
+            color: var(--text-dim);
+            font-size: 1.15rem;
+            max-width: 500px;
+            margin-bottom: 40px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            padding: 15px 35px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+
+            .success-icon {
+                font-size: 4rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="container">
+            <a href="index.html" class="logo">
+                <div class="logo-text">
+                    <h1>Alembro</h1>
+                </div>
+            </a>
+        </nav>
+    </header>
+
+    <main>
+        <i class="fas fa-check-circle success-icon"></i>
+        <h2 class="title gradient-text">Solicitação Enviada!</h2>
+        <p class="desc">Recebemos seus dados com sucesso. Logo um de nossos especialistas entrará em contato para
+            entender o desafio da sua empresa.</p>
+        <a href="index.html" class="btn-primary">
+            <i class="fas fa-arrow-left"></i> Voltar para o Site
+        </a>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Alembro. Todos os direitos reservados.</p>
+    </footer>
+</body>
+
+</html>

@@ -1133,14 +1133,12 @@
             });
 
             if (response.ok) {
-                alert('Solicitação enviada com sucesso! Logo um especialista da Alembro entrará em contato.');
-                form.reset();
+                window.location.href = 'thanks.html';
             } else {
                 alert('Ops! Tivemos um problema de conexão. Tente novamente.');
+                button.innerText = originalText;
+                button.disabled = false;
             }
-
-            button.innerText = originalText;
-            button.disabled = false;
         };
 
         const banner = document.getElementById('cookie-banner');
