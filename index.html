@@ -2,14 +2,13 @@
 <html lang="pt-BR">
 
 <head>
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KF7J95RRDX"></script>
     <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
 
-    gtag('config', 'G-KF7J95RRDX');
+        gtag('config', 'G-KF7J95RRDX');
     </script>
 
     <meta charset="UTF-8">
@@ -1043,6 +1042,17 @@
         </div>
     </footer>
 
+    <div id="cookie-banner"
+        style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; background: var(--bg-card); border: 1px solid var(--border); padding: 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 1000; text-align: center;">
+        <p style="margin-bottom: 15px; font-size: 0.95rem; color: var(--text-dim);">
+            Utilizamos cookies para analisar o tráfego e melhorar sua experiência. Ao continuar navegando, você concorda
+            com nossa
+            <a href="privacy.html" style="color: var(--primary); text-decoration: none; font-weight: 600;">Política de
+                Privacidade</a>.
+        </p>
+        <button id="accept-cookies" class="btn-primary" style="width: 100%; padding: 12px;">Entendi e Aceito</button>
+    </div>
+
     <script>
         function openTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -1131,6 +1141,18 @@
 
             button.innerText = originalText;
             button.disabled = false;
+        };
+
+        const banner = document.getElementById('cookie-banner');
+        const acceptBtn = document.getElementById('accept-cookies');
+
+        if (!localStorage.getItem('cookies-accepted')) {
+            banner.style.display = 'block';
+        }
+
+        acceptBtn.onclick = () => {
+            localStorage.setItem('cookies-accepted', 'true');
+            banner.style.display = 'none';
         };
     </script>
 </body>
