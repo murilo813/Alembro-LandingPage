@@ -408,7 +408,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
         }
 
         .store-icon-btn {
@@ -732,6 +732,7 @@
             font-size: 1rem;
             border: 1px solid var(--border);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
         }
 
         .stars {
@@ -739,8 +740,9 @@
         }
 
         .testimonials {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 30px;
             padding-bottom: 100px;
         }
@@ -750,6 +752,8 @@
             padding: 40px;
             border-radius: 16px;
             border: 1px solid var(--border);
+            flex: 1 1 300px;
+            max-width: 480px;
         }
 
         .testimonial-text {
@@ -1102,8 +1106,21 @@
                 font-size: 2rem;
             }
 
-            .mockup-crossfade-container {
-                height: 350px;
+            .mockup-crossfade-container,
+            .app-sequence-container,
+            .mockup-container-free,
+            .flow-mockup-wrapper {
+                height: 300px !important;
+                min-height: 300px !important;
+                margin-top: -10px;
+                margin-bottom: -10px;
+            }
+
+            .app-seq-img,
+            .mockup-crossfade-img,
+            .flow-phone-img,
+            .mockup-img-free {
+                max-height: 280px !important;
             }
 
             .flow-icon {
@@ -1157,8 +1174,32 @@
             }
 
             .reviews-badge {
-                width: 100%;
+                padding: 10px 15px !important;
+            }
+
+            .reviews-badge span,
+            .reviews-badge i {
+                font-size: 0.85rem !important;
+            }
+
+            .action-group {
+                gap: 8px !important;
                 justify-content: center;
+            }
+
+            .action-group>a {
+                white-space: nowrap !important;
+                padding: 10px 12px !important;
+                font-size: clamp(0.65rem, 3.5vw, 1rem) !important;
+                flex-shrink: 1 !important;
+            }
+
+            .action-group .store-icon-btn {
+                width: 42px !important;
+                height: 42px !important;
+                font-size: 1.3rem !important;
+                flex-shrink: 0 !important;
+                padding: 0 !important;
             }
         }
 
@@ -1369,7 +1410,7 @@
             </div>
 
             <div class="mockup-container-free">
-                <div class="mockup-glow-free" style="background: var(--success);"></div>
+                <div class="mockup-glow-free" style="background: var(--success); opacity: 0.15;"></div>
                 <img src="weberplaptop.webp" alt="Dashboard Alembro WebERP" class="mockup-img-free" width="1200"
                     height="819" loading="lazy">
             </div>
@@ -1427,8 +1468,7 @@
                     </li>
                 </ul>
                 <div class="action-group">
-                    <a href="#contato" class="btn-app-solid" style="padding: 15px 30px; font-size: 1.1rem;">Conheça a
-                        autonomia do FLOW</a>
+                    <a href="#contato" class="btn-app-solid" style="font-size: 1.1rem;">Conheça a autonomia do FLOW</a>
                     <a href="https://apps.apple.com/br/app/alembro-flow/id6786058041" target="_blank"
                         rel="noopener noreferrer" class="store-icon-btn app-theme"
                         style="width: 52px; height: 52px; font-size: 1.7rem;" title="Baixar na App Store"><i
@@ -1522,9 +1562,9 @@
                 <div class="stars" style="margin-bottom: 15px; font-size: 1.2rem;"><i class="fas fa-star"></i><i
                         class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
                         class="fas fa-star"></i></div>
-                <p class="testimonial-text">"A Alembro conseguiu otimizar nossos processos comerciais e financeiros,
-                    unindo e antecipando informações e decisões, trazendo ganhos para toda a empresa através da
-                    objetividade do APP e do WebERP."</p>
+                <p class="testimonial-text">"A Alembro otimizou nossos processos comerciais e financeiros, unindo e
+                    antecipando informações e decisões. Tivemos ganhos em toda a empresa com a objetividade do APP e do
+                    WebERP."</p>
                 <div class="testimonial-author">
                     <div class="author-avatar">T</div>
                     <div>
