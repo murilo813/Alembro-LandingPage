@@ -34,6 +34,7 @@
             --accent: #8b5cf6;
             --success: #10b981;
             --flow-green: #16A34A;
+            --app-gradient: linear-gradient(45deg, #15803D 0%, #16A34A 50%, #049271 100%);
             --border: #2dd4bf20;
         }
 
@@ -64,6 +65,12 @@
 
         .gradient-text {
             background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .app-gradient-text {
+            background: var(--app-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -130,12 +137,6 @@
             display: inline-block;
         }
 
-        .nav-links a.btn-primary:hover {
-            color: #fff;
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-        }
-
         .btn-primary:hover {
             background: var(--primary-hover);
             transform: translateY(-2px);
@@ -154,6 +155,24 @@
 
         .btn-outline:hover {
             background: rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-app-solid {
+            background: var(--app-gradient);
+            color: #fff !important;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            transition: 0.3s;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(22, 163, 74, 0.2);
+        }
+
+        .btn-app-solid:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.4);
         }
 
         #hero {
@@ -326,6 +345,10 @@
             font-size: 1.2rem;
         }
 
+        .lista-app i {
+            color: var(--flow-green);
+        }
+
         .action-group {
             display: flex;
             align-items: center;
@@ -355,26 +378,10 @@
             box-shadow: 0 5px 15px rgba(59, 130, 246, 0.2);
         }
 
-        .image-placeholder {
-            background: linear-gradient(135deg, #1a1d24, #2a2d34);
-            border: 2px dashed var(--border);
-            border-radius: 16px;
-            height: 450px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-dim);
-            text-align: center;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .image-placeholder i {
-            font-size: 4rem;
-            margin-bottom: 15px;
-            opacity: 0.5;
+        .store-icon-btn.app-theme:hover {
+            border-color: var(--flow-green);
+            color: var(--flow-green);
+            box-shadow: 0 5px 15px rgba(22, 163, 74, 0.2);
         }
 
         .erp-tag {
@@ -508,7 +515,6 @@
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
         }
 
-        /* Animação Orgânica (Flutua e tomba de leve) */
         @keyframes floatIcon {
             0% {
                 transform: translateY(0) rotate(var(--rot));
@@ -591,6 +597,60 @@
             left: 42%;
             --rot: 15deg;
             animation: floatIcon 6.2s ease-in-out infinite 0.9s;
+        }
+
+        .app-sequence-container {
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 450px;
+        }
+
+        .app-seq-phase {
+            position: absolute;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        .app-seq-phase.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 5;
+        }
+
+        .app-seq-phase h4 {
+            font-size: 2.2rem;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            font-weight: 800;
+            line-height: 1.2;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .app-seq-img {
+            max-width: 600px;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.6));
+            z-index: 6;
+        }
+
+        .app-seq-img.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
 
@@ -1016,6 +1076,10 @@
                 bottom: 0%;
                 left: 40%;
             }
+
+            .app-seq-phase h4 {
+                font-size: 1.6rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1174,30 +1238,38 @@
         <div id="tab-app" class="tab-content active">
             <div class="tab-text">
                 <div class="erp-tag"><i class="fas fa-sync"></i> 100% Integrado ao seu ERP</div>
-                <h3>Alembro APP</h3>
+                <h3>Alembro <span class="app-gradient-text">APP</span></h3>
                 <p>O CRM de bolso definitivo para seus representantes. Dê adeus aos pedidos no papel e ao retrabalho
                     noturno. Sua equipe fecha negócios de qualquer lugar com catálogo offline e sincronização
                     inteligente.</p>
-                <ul class="solucao-lista">
+                <ul class="solucao-lista lista-app">
                     <li><i class="fas fa-check-circle"></i> Emissão rápida de pedidos online e offline</li>
                     <li><i class="fas fa-check-circle"></i> Consulta de histórico e limites de crédito do cliente</li>
                     <li><i class="fas fa-check-circle"></i> Catálogo digital integrado com políticas de desconto</li>
                 </ul>
                 <div class="action-group">
-                    <a href="#contato" class="btn-outline">Quero integrar meu time</a>
+                    <a href="#contato" class="btn-app-solid">Quero integrar meu time</a>
                     <a href="https://apps.apple.com/br/app/alembro-app/id6776378226" target="_blank"
-                        rel="noopener noreferrer" class="store-icon-btn" title="Baixar na App Store"><i
+                        rel="noopener noreferrer" class="store-icon-btn app-theme" title="Baixar na App Store"><i
                             class="fab fa-apple"></i></a>
                     <a href="https://play.google.com/store/apps/details?id=com.alembro.alembro.app&pcampaignid=web_share"
-                        target="_blank" rel="noopener noreferrer" class="store-icon-btn"
+                        target="_blank" rel="noopener noreferrer" class="store-icon-btn app-theme"
                         title="Baixar no Google Play"><i class="fab fa-google-play"></i></a>
                 </div>
             </div>
-            <div class="image-placeholder">
-                <i class="fas fa-mobile-alt"></i>
-                <h4>Mockup do Alembro APP</h4>
-                <p style="font-size: 0.85rem; margin-top: 10px;">[ Espaço reservado para a tela real do aplicativo ]</p>
+
+            <div class="app-sequence-container">
+                <div id="app-phase-1" class="app-seq-phase active">
+                    <h4>Chega de pedidos no papel<br>e agenda esquecida.</h4>
+                </div>
+                <div id="app-phase-2" class="app-seq-phase">
+                    <h4>Conheça a <span class="app-gradient-text">solução definitiva.</span></h4>
+                    <div class="mockup-glow-free" style="background: var(--flow-green); opacity: 0.15;"></div>
+                    <img src="appcelular.webp" alt="Alembro App Celular" class="app-seq-img" id="app-phase-img"
+                        loading="lazy">
+                </div>
             </div>
+
         </div>
 
         <div id="tab-weberp" class="tab-content">
@@ -1278,17 +1350,16 @@
                     </li>
                 </ul>
                 <div class="action-group">
-                    <a href="#contato" class="btn-primary"
-                        style="background: var(--flow-green); padding: 15px 30px; font-size: 1.1rem;">Conheça a
+                    <a href="#contato" class="btn-app-solid" style="padding: 15px 30px; font-size: 1.1rem;">Conheça a
                         autonomia do FLOW</a>
                     <a href="https://apps.apple.com/br/app/alembro-flow/id6786058041" target="_blank"
-                        rel="noopener noreferrer" class="store-icon-btn"
-                        style="width: 52px; height: 52px; font-size: 1.7rem; color: var(--flow-green); border-color: rgba(22, 163, 74, 0.3);"
-                        title="Baixar na App Store"><i class="fab fa-apple"></i></a>
+                        rel="noopener noreferrer" class="store-icon-btn app-theme"
+                        style="width: 52px; height: 52px; font-size: 1.7rem;" title="Baixar na App Store"><i
+                            class="fab fa-apple"></i></a>
                     <a href="https://play.google.com/store/apps/details?id=com.alembro.alembro.flow&pcampaignid=web_share"
-                        target="_blank" rel="noopener noreferrer" class="store-icon-btn"
-                        style="width: 52px; height: 52px; font-size: 1.7rem; color: var(--flow-green); border-color: rgba(22, 163, 74, 0.3);"
-                        title="Baixar no Google Play"><i class="fab fa-google-play"></i></a>
+                        target="_blank" rel="noopener noreferrer" class="store-icon-btn app-theme"
+                        style="width: 52px; height: 52px; font-size: 1.7rem;" title="Baixar no Google Play"><i
+                            class="fab fa-google-play"></i></a>
                 </div>
             </div>
 
@@ -1658,9 +1729,9 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            const container = document.getElementById('stock-crossfade');
-            if (container) {
-                const images = container.querySelectorAll('.mockup-crossfade-img');
+            const containerStock = document.getElementById('stock-crossfade');
+            if (containerStock) {
+                const images = containerStock.querySelectorAll('.mockup-crossfade-img');
                 let currentIndex = 0;
 
                 setInterval(() => {
@@ -1681,6 +1752,37 @@
 
                     currentIndex = nextIndex;
                 }, 4000);
+            }
+
+            const p1 = document.getElementById('app-phase-1');
+            const p2 = document.getElementById('app-phase-2');
+            const p2Img = document.getElementById('app-phase-img');
+
+            if (p1 && p2 && p2Img) {
+                async function runAppSequence() {
+                    while (true) {
+                        p2.classList.remove('active');
+                        p2Img.classList.remove('show');
+                        p1.classList.add('active');
+
+                        await new Promise(r => setTimeout(r, 3000));
+
+                        p1.classList.remove('active');
+                        await new Promise(r => setTimeout(r, 800));
+
+                        p2.classList.add('active');
+                        await new Promise(r => setTimeout(r, 600));
+
+                        p2Img.classList.add('show');
+                        await new Promise(r => setTimeout(r, 5000));
+
+                        p2.classList.remove('active');
+                        p2Img.classList.remove('show');
+                        await new Promise(r => setTimeout(r, 800));
+                    }
+                }
+
+                runAppSequence();
             }
         });
 
