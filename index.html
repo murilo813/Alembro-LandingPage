@@ -844,6 +844,11 @@
             .faq-header h2 {
                 font-size: 2rem;
             }
+
+            .mockup-crossfade-container {
+                height: 350px;
+                /* Ajuste para mobile */
+            }
         }
 
         @media (max-width: 480px) {
@@ -910,6 +915,74 @@
             max-width: 600px;
             height: auto;
             animation: float 6s ease-in-out infinite;
+        }
+
+        .mockup-container-free {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: auto;
+            min-height: 450px;
+        }
+
+        .mockup-glow-free {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: var(--primary);
+            /* Azul principal da Alembro */
+            filter: blur(150px);
+            opacity: 0.25;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .mockup-img-free {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.6));
+        }
+
+        .mockup-crossfade-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 500px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.6));
+        }
+
+        .mockup-crossfade-img {
+            position: absolute;
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            opacity: 0;
+            transform: translateX(150px);
+            transition: none;
+            z-index: 1;
+        }
+
+        .mockup-crossfade-img.active {
+            opacity: 1;
+            transform: translateX(0);
+            transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            /* Rápido e suave */
+            z-index: 2;
+        }
+
+        .mockup-crossfade-img.exit {
+            opacity: 0;
+            transform: translateX(-150px);
+            transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            z-index: 1;
         }
     </style>
 </head>
@@ -1057,11 +1130,17 @@
                         title="Baixar no Google Play"><i class="fab fa-google-play"></i></a>
                 </div>
             </div>
-            <div class="image-placeholder" style="background: linear-gradient(135deg, #1f2937, #111827);">
-                <i class="fas fa-boxes"></i>
-                <h4>Tela do Alembro STOCK</h4>
-                <p style="font-size: 0.85rem; margin-top: 10px;">[ Espaço reservado para interface de estoque ]</p>
+
+            <div style="position: relative; width: 100%; display: flex; justify-content: center;">
+                <div class="mockup-glow-free"></div>
+                <div class="mockup-crossfade-container" id="stock-crossfade">
+                    <img src="stockprancheta.webp" alt="Prancheta" class="mockup-crossfade-img active" width="1200"
+                        height="800" loading="lazy">
+                    <img src="stockcelular.webp" alt="Celular Stock" class="mockup-crossfade-img" width="1200"
+                        height="800" loading="lazy">
+                </div>
             </div>
+
         </div>
     </section>
 
@@ -1447,6 +1526,34 @@
             localStorage.setItem('cookies-accepted', 'true');
             banner.style.display = 'none';
         };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('stock-crossfade');
+            if (container) {
+                const images = container.querySelectorAll('.mockup-crossfade-img');
+                let currentIndex = 0;
+
+                setInterval(() => {
+                    const currentImg = images[currentIndex];
+                    const nextIndex = (currentIndex + 1) % images.length;
+                    const nextImg = images[nextIndex];
+
+                    currentImg.classList.remove('active');
+                    currentImg.classList.add('exit');
+
+                    setTimeout(() => {
+                        nextImg.classList.add('active');
+                    }, 50);
+
+                    setTimeout(() => {
+                        currentImg.classList.remove('exit');
+                    }, 650);
+
+                    currentIndex = nextIndex;
+                }, 4000);
+            }
+        });
+
     </script>
 </body>
 
