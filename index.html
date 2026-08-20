@@ -33,6 +33,7 @@
             --primary-hover: #2563eb;
             --accent: #8b5cf6;
             --success: #10b981;
+            --flow-green: #16A34A;
             --border: #2dd4bf20;
         }
 
@@ -400,8 +401,8 @@
         }
 
         .featured-product {
-            background: linear-gradient(145deg, var(--bg-card) 0%, rgba(59, 130, 246, 0.1) 100%);
-            border: 1px solid var(--primary);
+            background: linear-gradient(145deg, var(--bg-card) 0%, rgba(22, 163, 74, 0.05) 100%);
+            border: 1px solid var(--flow-green);
             border-radius: 16px;
             padding: 60px;
             display: flex;
@@ -409,14 +410,16 @@
             gap: 40px;
             margin-bottom: 100px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
         }
 
         .featured-content {
             flex: 1;
+            z-index: 10;
         }
 
         .featured-badge {
-            background: var(--primary);
+            background: var(--flow-green);
             color: white;
             padding: 6px 16px;
             border-radius: 20px;
@@ -453,9 +456,143 @@
         }
 
         .featured-list i {
-            color: var(--success);
+            color: var(--flow-green);
             font-size: 1.2rem;
         }
+
+        .flow-mockup-wrapper {
+            flex: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 500px;
+            width: 100%;
+        }
+
+        .flow-glow {
+            position: absolute;
+            width: 380px;
+            height: 380px;
+            background: var(--flow-green);
+            filter: blur(150px);
+            opacity: 0.25;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .flow-phone-img {
+            position: relative;
+            z-index: 5;
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 25px 40px rgba(0, 0, 0, 0.8));
+            transform: scale(1.06) translateY(-12px);
+        }
+
+        .flow-icon {
+            position: absolute;
+            z-index: 4;
+            width: 65px;
+            height: 65px;
+            background: var(--bg-card);
+            border: 1px solid rgba(22, 163, 74, 0.3);
+            color: var(--flow-green);
+            font-size: 1.8rem;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Animação Orgânica (Flutua e tomba de leve) */
+        @keyframes floatIcon {
+            0% {
+                transform: translateY(0) rotate(var(--rot));
+            }
+
+            50% {
+                transform: translateY(-18px) rotate(calc(var(--rot) + 6deg));
+            }
+
+            100% {
+                transform: translateY(0) rotate(var(--rot));
+            }
+        }
+
+        .fi-1 {
+            top: 8%;
+            left: 15%;
+            --rot: -15deg;
+            animation: floatIcon 4.5s ease-in-out infinite 0s;
+        }
+
+        .fi-2 {
+            top: 35%;
+            left: 2%;
+            --rot: 12deg;
+            animation: floatIcon 6s ease-in-out infinite 1.2s;
+        }
+
+        .fi-3 {
+            bottom: 30%;
+            left: 5%;
+            --rot: -22deg;
+            animation: floatIcon 5.2s ease-in-out infinite 0.7s;
+        }
+
+        .fi-4 {
+            bottom: 5%;
+            left: 18%;
+            --rot: 18deg;
+            animation: floatIcon 4.8s ease-in-out infinite 2.1s;
+        }
+
+        .fi-5 {
+            top: 12%;
+            right: 12%;
+            --rot: 20deg;
+            animation: floatIcon 5.8s ease-in-out infinite 0.4s;
+        }
+
+        .fi-6 {
+            top: 40%;
+            right: 0%;
+            --rot: -10deg;
+            animation: floatIcon 4.2s ease-in-out infinite 1.8s;
+        }
+
+        .fi-7 {
+            bottom: 28%;
+            right: 3%;
+            --rot: 25deg;
+            animation: floatIcon 6.5s ease-in-out infinite 0.2s;
+        }
+
+        .fi-8 {
+            bottom: 2%;
+            right: 22%;
+            --rot: -14deg;
+            animation: floatIcon 5.5s ease-in-out infinite 2.5s;
+        }
+
+        .fi-9 {
+            top: -2%;
+            left: 45%;
+            --rot: -8deg;
+            animation: floatIcon 5.1s ease-in-out infinite 1.5s;
+        }
+
+        .fi-10 {
+            bottom: -5%;
+            left: 42%;
+            --rot: 15deg;
+            animation: floatIcon 6.2s ease-in-out infinite 0.9s;
+        }
+
 
         .stores-badges-center {
             display: flex;
@@ -847,7 +984,37 @@
 
             .mockup-crossfade-container {
                 height: 350px;
-                /* Ajuste para mobile */
+            }
+
+            .flow-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+
+            .fi-1 {
+                top: 5%;
+                left: 8%;
+            }
+
+            .fi-2 {
+                top: 35%;
+                left: 0%;
+            }
+
+            .fi-6 {
+                top: 40%;
+                right: 0%;
+            }
+
+            .fi-9 {
+                top: 0%;
+                left: 40%;
+            }
+
+            .fi-10 {
+                bottom: 0%;
+                left: 40%;
             }
         }
 
@@ -871,23 +1038,6 @@
             }
         }
 
-        @keyframes float {
-            0% {
-                transform: translateY(0px);
-                filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.7));
-            }
-
-            50% {
-                transform: translateY(-12px);
-                filter: drop-shadow(0 40px 50px rgba(0, 0, 0, 0.5));
-            }
-
-            100% {
-                transform: translateY(0px);
-                filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.7));
-            }
-        }
-
         .mockup-container-free {
             position: relative;
             display: flex;
@@ -902,36 +1052,6 @@
             width: 400px;
             height: 400px;
             background: var(--primary);
-            filter: blur(150px);
-            opacity: 0.35;
-            border-radius: 50%;
-            z-index: 1;
-        }
-
-        .mockup-img-free {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            max-width: 600px;
-            height: auto;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .mockup-container-free {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: auto;
-            min-height: 450px;
-        }
-
-        .mockup-glow-free {
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: var(--primary);
-            /* Azul principal da Alembro */
             filter: blur(150px);
             opacity: 0.25;
             border-radius: 50%;
@@ -974,7 +1094,6 @@
             opacity: 1;
             transform: translateX(0);
             transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            /* Rápido e suave */
             z-index: 2;
         }
 
@@ -1147,8 +1266,8 @@
     <section class="container">
         <div class="featured-product">
             <div class="featured-content">
-                <span class="featured-badge">Lançamento</span>
-                <h3>Alembro <span style="color: var(--primary);">FLOW</span></h3>
+                <span class="featured-badge" style="background: var(--flow-green);">Lançamento</span>
+                <h3>Alembro <span style="color: var(--flow-green);">FLOW</span></h3>
                 <p>Ainda não possui um ERP? Sem problemas. O Alembro FLOW é nossa primeira solução 100% independente.
                     Criada para estruturar e gerenciar seu negócio de ponta a ponta, sem depender de sistemas de
                     terceiros para rodar.</p>
@@ -1159,25 +1278,36 @@
                     </li>
                 </ul>
                 <div class="action-group">
-                    <a href="#contato" class="btn-primary" style="padding: 15px 30px; font-size: 1.1rem;">Conheça a
+                    <a href="#contato" class="btn-primary"
+                        style="background: var(--flow-green); padding: 15px 30px; font-size: 1.1rem;">Conheça a
                         autonomia do FLOW</a>
                     <a href="https://apps.apple.com/br/app/alembro-flow/id6786058041" target="_blank"
                         rel="noopener noreferrer" class="store-icon-btn"
-                        style="width: 52px; height: 52px; font-size: 1.7rem;" title="Baixar na App Store"><i
-                            class="fab fa-apple"></i></a>
+                        style="width: 52px; height: 52px; font-size: 1.7rem; color: var(--flow-green); border-color: rgba(22, 163, 74, 0.3);"
+                        title="Baixar na App Store"><i class="fab fa-apple"></i></a>
                     <a href="https://play.google.com/store/apps/details?id=com.alembro.alembro.flow&pcampaignid=web_share"
                         target="_blank" rel="noopener noreferrer" class="store-icon-btn"
-                        style="width: 52px; height: 52px; font-size: 1.7rem;" title="Baixar no Google Play"><i
-                            class="fab fa-google-play"></i></a>
+                        style="width: 52px; height: 52px; font-size: 1.7rem; color: var(--flow-green); border-color: rgba(22, 163, 74, 0.3);"
+                        title="Baixar no Google Play"><i class="fab fa-google-play"></i></a>
                 </div>
             </div>
-            <div class="image-placeholder"
-                style="flex: 1; border-color: var(--primary); background: rgba(59,130,246,0.05); min-height: 400px;">
-                <i class="fas fa-project-diagram" style="color: var(--primary);"></i>
-                <h4 style="color: var(--primary);">Ecossistema FLOW</h4>
-                <p style="font-size: 0.85rem; margin-top: 10px;">[ Espaço reservado para a identidade visual do FLOW ]
-                </p>
+
+            <div class="flow-mockup-wrapper">
+                <div class="flow-glow"></div>
+                <img src="flowcelular.webp" alt="Alembro FLOW App" class="flow-phone-img" loading="lazy">
+
+                <div class="flow-icon fi-1"><i class="fas fa-users"></i></div>
+                <div class="flow-icon fi-2"><i class="fas fa-cloud"></i></div>
+                <div class="flow-icon fi-3"><i class="fas fa-bolt"></i></div>
+                <div class="flow-icon fi-4"><i class="fas fa-shopping-cart"></i></div>
+                <div class="flow-icon fi-5"><i class="fas fa-wallet"></i></div>
+                <div class="flow-icon fi-6"><i class="fas fa-chart-pie"></i></div>
+                <div class="flow-icon fi-7"><i class="fas fa-boxes-stacked"></i></div>
+                <div class="flow-icon fi-8"><i class="fas fa-shield-alt"></i></div>
+                <div class="flow-icon fi-9"><i class="fas fa-cogs"></i></div>
+                <div class="flow-icon fi-10"><i class="fas fa-file-invoice-dollar"></i></div>
             </div>
+
         </div>
     </section>
 
