@@ -1189,6 +1189,24 @@
             max-width: 600px;
             height: auto;
             filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.6));
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+                filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.6));
+            }
+
+            50% {
+                transform: translateY(-12px);
+                filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.4));
+            }
+
+            100% {
+                transform: translateY(0px);
+                filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.6));
+            }
         }
 
         .mockup-crossfade-container {
@@ -1483,6 +1501,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="testimonial-card">
                 <div class="stars" style="margin-bottom: 15px; font-size: 1.2rem;"><i class="fas fa-star"></i><i
                         class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
@@ -1494,6 +1513,22 @@
                     <div class="author-avatar">F</div>
                     <div>
                         <strong>Fábio</strong>
+                        <div style="font-size: 0.85rem; color: var(--text-dim);">Agronegócio</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div class="stars" style="margin-bottom: 15px; font-size: 1.2rem;"><i class="fas fa-star"></i><i
+                        class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                        class="fas fa-star"></i></div>
+                <p class="testimonial-text">"A Alembro conseguiu otimizar nossos processos comerciais e financeiros,
+                    unindo e antecipando informações e decisões, trazendo ganhos para toda a empresa através da
+                    objetividade do APP e do WebERP."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">T</div>
+                    <div>
+                        <strong>Tiago</strong>
                         <div style="font-size: 0.85rem; color: var(--text-dim);">Agronegócio</div>
                     </div>
                 </div>
