@@ -14,7 +14,6 @@
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
-
         gtag('config', 'G-KF7J95RRDX');
     </script>
 
@@ -35,6 +34,7 @@
             --success: #10b981;
             --flow-green: #16A34A;
             --app-gradient: linear-gradient(45deg, #15803D 0%, #16A34A 50%, #049271 100%);
+            --stock-gradient: linear-gradient(45deg, #003366 0%, #0056A3 50%, #3399FF 100%);
             --border: #2dd4bf20;
         }
 
@@ -73,6 +73,16 @@
             background: var(--app-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+
+        .stock-gradient-text {
+            background: var(--stock-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .weberp-color-text {
+            color: var(--success);
         }
 
         header {
@@ -158,7 +168,7 @@
         }
 
         .btn-app-solid {
-            background: var(--app-gradient);
+            background: var(--app-gradient) !important;
             color: #fff !important;
             padding: 12px 24px;
             border-radius: 8px;
@@ -173,6 +183,43 @@
         .btn-app-solid:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(22, 163, 74, 0.4);
+        }
+
+        .btn-stock-solid {
+            background: var(--stock-gradient) !important;
+            color: #fff !important;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            transition: 0.3s;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(0, 86, 163, 0.2);
+        }
+
+        .btn-stock-solid:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 86, 163, 0.4);
+        }
+
+        .btn-weberp-solid {
+            background: var(--success) !important;
+            color: #fff !important;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            transition: 0.3s;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-weberp-solid:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+            background: #0ea5e9;
         }
 
         #hero {
@@ -349,6 +396,14 @@
             color: var(--flow-green);
         }
 
+        .lista-stock i {
+            color: #3399FF;
+        }
+
+        .lista-weberp i {
+            color: var(--success);
+        }
+
         .action-group {
             display: flex;
             align-items: center;
@@ -382,6 +437,12 @@
             border-color: var(--flow-green);
             color: var(--flow-green);
             box-shadow: 0 5px 15px rgba(22, 163, 74, 0.2);
+        }
+
+        .store-icon-btn.stock-theme:hover {
+            border-color: #3399FF;
+            color: #3399FF;
+            box-shadow: 0 5px 15px rgba(51, 153, 255, 0.2);
         }
 
         .erp-tag {
@@ -652,7 +713,6 @@
             opacity: 1;
             transform: translateY(0);
         }
-
 
         .stores-badges-center {
             display: flex;
@@ -1269,17 +1329,16 @@
                         loading="lazy">
                 </div>
             </div>
-
         </div>
 
         <div id="tab-weberp" class="tab-content">
             <div class="tab-text">
                 <div class="erp-tag"><i class="fas fa-sync"></i> 100% Integrado ao seu ERP</div>
-                <h3>Alembro WebERP</h3>
+                <h3>Alembro <span class="weberp-color-text">WebERP</span></h3>
                 <p>O centro de comando da sua operação financeira e contábil. Centraliza contas, contratos e cheques
                     para uma visão ampla e detalhada da saúde do seu negócio, mantendo integração total e bidirecional
                     com o Alembro STOCK.</p>
-                <ul class="solucao-lista">
+                <ul class="solucao-lista lista-weberp">
                     <li><i class="fas fa-check-circle"></i> Visão ampla de contas, contratos e cheques em um só lugar
                     </li>
                     <li><i class="fas fa-check-circle"></i> Integração bilateral com o Alembro STOCK para análise de
@@ -1287,12 +1346,12 @@
                     <li><i class="fas fa-check-circle"></i> Gestão completa de gastos veiculares e frota</li>
                 </ul>
                 <div class="action-group">
-                    <a href="#contato" class="btn-outline">Ver demonstração do painel</a>
+                    <a href="#contato" class="btn-weberp-solid">Ver demonstração do painel</a>
                 </div>
             </div>
 
             <div class="mockup-container-free">
-                <div class="mockup-glow-free"></div>
+                <div class="mockup-glow-free" style="background: var(--success);"></div>
                 <img src="weberplaptop.webp" alt="Dashboard Alembro WebERP" class="mockup-img-free" width="1200"
                     height="819" loading="lazy">
             </div>
@@ -1301,29 +1360,29 @@
         <div id="tab-stock" class="tab-content">
             <div class="tab-text">
                 <div class="erp-tag"><i class="fas fa-sync"></i> 100% Integrado ao seu ERP</div>
-                <h3>Alembro STOCK</h3>
+                <h3>Alembro <span class="stock-gradient-text">STOCK</span></h3>
                 <p>Agilidade e autonomia total para o seu armazém. Funciona totalmente offline com contagens validadas
                     em tempo real, integrando-se perfeitamente ao WebERP para agendar contagens e auditar divergências
                     de inventário.</p>
-                <ul class="solucao-lista">
+                <ul class="solucao-lista lista-stock">
                     <li><i class="fas fa-check-circle"></i> Operação 100% offline para uso direto no galpão</li>
                     <li><i class="fas fa-check-circle"></i> Contagens validadas e sincronizadas em tempo real</li>
                     <li><i class="fas fa-check-circle"></i> Agendamento de inventários e cruzamento de dados com o
                         WebERP</li>
                 </ul>
                 <div class="action-group">
-                    <a href="#contato" class="btn-outline">Otimizar minha logística</a>
+                    <a href="#contato" class="btn-stock-solid">Otimizar minha logística</a>
                     <a href="https://apps.apple.com/br/app/alembro-stock/id6779339338" target="_blank"
-                        rel="noopener noreferrer" class="store-icon-btn" title="Baixar na App Store"><i
+                        rel="noopener noreferrer" class="store-icon-btn stock-theme" title="Baixar na App Store"><i
                             class="fab fa-apple"></i></a>
                     <a href="https://play.google.com/store/apps/details?id=com.alembro.alembro.stock&pcampaignid=web_share"
-                        target="_blank" rel="noopener noreferrer" class="store-icon-btn"
+                        target="_blank" rel="noopener noreferrer" class="store-icon-btn stock-theme"
                         title="Baixar no Google Play"><i class="fab fa-google-play"></i></a>
                 </div>
             </div>
 
             <div style="position: relative; width: 100%; display: flex; justify-content: center;">
-                <div class="mockup-glow-free"></div>
+                <div class="mockup-glow-free" style="background: #0056A3;"></div>
                 <div class="mockup-crossfade-container" id="stock-crossfade">
                     <img src="stockprancheta.webp" alt="Prancheta" class="mockup-crossfade-img active" width="1200"
                         height="800" loading="lazy">
