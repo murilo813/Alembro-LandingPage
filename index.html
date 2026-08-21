@@ -1286,6 +1286,228 @@
             transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
             z-index: 1;
         }
+
+        /* Modal de login (seleção de app + formulário mock) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 17, 21, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 440px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 35px 30px;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: var(--text-main);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .modal-subtitle {
+            color: var(--text-dim);
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        .app-select-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .app-select-btn {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            padding: 18px 20px;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.3s;
+            color: var(--text-main);
+        }
+
+        .app-select-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .app-select-btn.flow-option:hover,
+        .app-select-btn.app-option:hover {
+            border-color: var(--flow-green);
+            box-shadow: 0 5px 15px rgba(22, 163, 74, 0.2);
+        }
+
+        .app-select-btn.stock-option:hover {
+            border-color: #3399FF;
+            box-shadow: 0 5px 15px rgba(51, 153, 255, 0.2);
+        }
+
+        .app-select-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: #fff;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* TODO: quando as logos oficiais de cada app estiverem prontas,
+           trocar os ícones do Font Awesome abaixo (dentro de .app-select-icon)
+           por <img> com o logo de cada app (FLOW, APP e STOCK). */
+        .app-select-icon.flow-bg {
+            background: var(--flow-green);
+        }
+
+        .app-select-icon.app-bg {
+            background: var(--app-gradient);
+        }
+
+        .app-select-icon.stock-bg {
+            background: var(--stock-gradient);
+        }
+
+        .app-select-text strong {
+            display: block;
+            font-size: 1.05rem;
+        }
+
+        .app-select-text span {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        .login-back-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .login-back-btn:hover {
+            color: var(--text-main);
+        }
+
+        .login-form-group {
+            margin-bottom: 12px;
+        }
+
+        .login-form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+
+        .login-form-group input {
+            padding: 13px 14px;
+        }
+
+        .login-guest-link {
+            display: block;
+            text-align: center;
+            margin-top: 14px;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .login-guest-link:hover {
+            color: var(--primary);
+        }
+
+        .login-switch-link {
+            display: block;
+            text-align: center;
+            margin-top: 14px;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .password-field-wrapper {
+            position: relative;
+        }
+
+        .password-field-wrapper input {
+            padding-right: 46px;
+        }
+
+        .password-toggle-btn {
+            position: absolute;
+            top: 50%;
+            right: 4px;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            padding: 8px 10px;
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+
+        .password-toggle-btn:hover {
+            color: var(--text-main);
+        }
+
+        @media (max-width: 480px) {
+            .modal-box {
+                padding: 30px 20px;
+            }
+        }
     </style>
 </head>
 
@@ -1301,6 +1523,7 @@
             <ul class="nav-links">
                 <li><a href="#solucoes">Soluções</a></li>
                 <li><a href="#depoimentos">Clientes</a></li>
+                <li><a href="#" id="open-login-btn" class="btn-outline">Entrar</a></li>
                 <li><a href="#contato" class="btn-primary">Fale com um Especialista</a></li>
             </ul>
         </nav>
@@ -1738,6 +1961,188 @@
         </p>
         <button id="accept-cookies" class="btn-primary" style="width: 100%; padding: 12px;">Entendi e Aceito</button>
     </div>
+
+    <div id="login-modal-overlay" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" id="login-modal-close" aria-label="Fechar">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div id="login-step-select">
+                <h3 class="modal-title">Entrar na sua conta</h3>
+                <p class="modal-subtitle">De qual app você está vindo?</p>
+                <div class="app-select-list">
+                    <button type="button" class="app-select-btn flow-option" data-app="flow">
+                        <!-- TODO: trocar pelo logo oficial do Alembro FLOW quando estiver pronto -->
+                        <span class="app-select-icon flow-bg"><i class="fas fa-bolt"></i></span>
+                        <span class="app-select-text">
+                            <strong>Alembro FLOW</strong>
+                            <span>Gestão administrativa</span>
+                        </span>
+                    </button>
+                    <button type="button" class="app-select-btn app-option" data-app="app">
+                        <!-- TODO: trocar pelo logo oficial do Alembro APP quando estiver pronto -->
+                        <span class="app-select-icon app-bg"><i class="fas fa-mobile-screen-button"></i></span>
+                        <span class="app-select-text">
+                            <strong>Alembro APP</strong>
+                            <span>Força de vendas / CRM</span>
+                        </span>
+                    </button>
+                    <button type="button" class="app-select-btn stock-option" data-app="stock">
+                        <!-- TODO: trocar pelo logo oficial do Alembro STOCK quando estiver pronto -->
+                        <span class="app-select-icon stock-bg"><i class="fas fa-boxes-stacked"></i></span>
+                        <span class="app-select-text">
+                            <strong>Alembro STOCK</strong>
+                            <span>Controle de estoque</span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="login-step-form" style="display: none;">
+                <button type="button" class="login-back-btn" id="login-back-btn">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </button>
+                <h3 class="modal-title" id="login-form-title">Entrar</h3>
+                <p class="modal-subtitle" id="login-form-subtitle">Acesse sua conta</p>
+
+                <form id="mock-login-form">
+                    <div class="login-form-group">
+                        <label for="login-email">E-mail</label>
+                        <input type="email" id="login-email" placeholder="voce@empresa.com" required>
+                    </div>
+                    <div class="login-form-group">
+                        <label for="login-password">Senha</label>
+                        <div class="password-field-wrapper">
+                            <input type="password" id="login-password" placeholder="••••••••" required>
+                            <button type="button" class="password-toggle-btn" data-target="login-password"
+                                aria-label="Mostrar senha">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" id="login-submit-btn"
+                        style="width: 100%; padding: 14px;">Entrar</button>
+                </form>
+                <p class="login-switch-link">Não tem uma conta? Acesse o Alembro FLOW e crie uma.</p>
+                <a href="#" class="login-guest-link" id="login-guest-link">Entrar como visitante</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="services/mock-data.js"></script>
+    <script>
+        const { APPS, mockLogin, saveMockSession, clearMockSession } = window.AlembroMockData;
+
+        const openBtn = document.getElementById('open-login-btn');
+        const overlay = document.getElementById('login-modal-overlay');
+        const closeBtn = document.getElementById('login-modal-close');
+        const stepSelect = document.getElementById('login-step-select');
+        const stepForm = document.getElementById('login-step-form');
+        const backBtn = document.getElementById('login-back-btn');
+        const formTitle = document.getElementById('login-form-title');
+        const formSubtitle = document.getElementById('login-form-subtitle');
+        const submitBtn = document.getElementById('login-submit-btn');
+        const guestLink = document.getElementById('login-guest-link');
+        const loginForm = document.getElementById('mock-login-form');
+
+        let selectedApp = null;
+
+        function openModal() {
+            overlay.classList.add('active');
+            showSelectStep();
+        }
+
+        function closeModal() {
+            overlay.classList.remove('active');
+        }
+
+        function showSelectStep() {
+            stepSelect.style.display = 'block';
+            stepForm.style.display = 'none';
+        }
+
+        function showFormStep(appKey) {
+            selectedApp = appKey;
+            const app = APPS[appKey];
+            formTitle.textContent = `Entrar — ${app.name}`;
+            formSubtitle.textContent = 'Ambiente de demonstração (dados fictícios)';
+            submitBtn.style.background = app.colorHex;
+            stepSelect.style.display = 'none';
+            stepForm.style.display = 'block';
+        }
+
+        function goToAccount(appKey) {
+            // Aqui entraria a chamada real de login via services/api.js,
+            // ex: const session = await login(email, senha);
+            const session = mockLogin(appKey);
+            saveMockSession(session);
+            // O app escolhido também vai na URL (não só no localStorage):
+            // em file:// alguns navegadores isolam o localStorage por
+            // arquivo, então a query string garante que o painel sempre
+            // sabe qual conta carregar.
+            window.location.href = `pages/conta.html?app=${appKey}`;
+        }
+
+        function goToAccountAsGuest(appKey) {
+            clearMockSession();
+            window.location.href = `pages/conta.html?app=${appKey}&guest=1`;
+        }
+
+        openBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal();
+        });
+
+        closeBtn.addEventListener('click', closeModal);
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && overlay.classList.contains('active')) closeModal();
+        });
+
+        backBtn.addEventListener('click', showSelectStep);
+
+        document.querySelectorAll('.app-select-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const appKey = btn.dataset.app;
+                if (appKey === 'app' || appKey === 'stock') {
+                    // Alembro APP e Alembro STOCK compartilham a mesma conta e
+                    // já têm um fluxo de acesso real (login + gestão de conta)
+                    // em pages/delete.html — não precisa passar pelo login
+                    // mock daqui.
+                    window.location.href = 'pages/delete.html';
+                    return;
+                }
+                showFormStep(appKey);
+            });
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            goToAccount(selectedApp);
+        });
+
+        guestLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            goToAccountAsGuest(selectedApp);
+        });
+
+        document.querySelectorAll('.password-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const input = document.getElementById(btn.dataset.target);
+                const icon = btn.querySelector('i');
+                const willShow = input.type === 'password';
+                input.type = willShow ? 'text' : 'password';
+                icon.classList.toggle('fa-eye', !willShow);
+                icon.classList.toggle('fa-eye-slash', willShow);
+                btn.setAttribute('aria-label', willShow ? 'Ocultar senha' : 'Mostrar senha');
+            });
+        });
+    </script>
 
     <script>
         function openTab(tabId) {

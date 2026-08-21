@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Conta | Alembro</title>
+    <link rel="icon" href="../assets/images/favicon.png" type="image/png">
+
+    <meta name="robots" content="noindex">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Montserrat:wght@800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #0f1115;
+            --bg-card: #1a1d24;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent: #8b5cf6;
+            --success: #10b981;
+            --flow-green: #16A34A;
+            --stock-gradient: linear-gradient(45deg, #003366 0%, #0056A3 50%, #3399FF 100%);
+            --border: #2dd4bf20;
+        }
+
+        body.theme-flow {
+            --account-accent: var(--flow-green);
+            --account-gradient: var(--flow-green);
+        }
+
+        body.theme-stock {
+            --account-accent: #3399FF;
+            --account-gradient: var(--stock-gradient);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            background: rgba(15, 17, 21, 0.9);
+        }
+
+        header nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .logo h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+        }
+
+        .btn-outline {
+            border: 1px solid var(--text-dim);
+            color: var(--text-main);
+            background: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        main {
+            padding: 50px 0 100px 0;
+        }
+
+        .account-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .account-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--account-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .account-header-text h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .account-header-text p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+
+        .app-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--account-gradient);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 8px;
+        }
+
+        .account-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+        }
+
+        .card h3 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 i {
+            color: var(--account-accent);
+        }
+
+        .sub-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sub-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .sub-row span:first-child {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .sub-row span:last-child {
+            font-weight: 600;
+        }
+
+        .subscription-notice {
+            margin-bottom: 20px;
+        }
+
+        .subscription-notice p {
+            margin-bottom: 8px;
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+
+        .subscription-notice p:last-child {
+            margin-bottom: 0;
+        }
+
+        .subscription-notice .trial-days {
+            color: var(--account-accent);
+            font-weight: 700;
+        }
+
+        .subscription-notice.expired p:first-child {
+            color: #ef4444;
+            font-weight: 700;
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .status-pill.status-ativa,
+        .status-pill.status-paga {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .status-pill.status-cancelada {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .invoice-list {
+            list-style: none;
+        }
+
+        .invoice-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .invoice-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .invoice-item .invoice-id {
+            font-weight: 700;
+        }
+
+        .invoice-item .invoice-date {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        .invoice-item .invoice-value {
+            font-weight: 700;
+            margin-right: 15px;
+        }
+
+        .invoice-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .account-form-group {
+            margin-bottom: 18px;
+        }
+
+        .account-form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+
+        .account-form-group input {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-main);
+            outline: none;
+            transition: 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .account-form-group input:focus {
+            border-color: var(--account-accent);
+        }
+
+        .readonly-field {
+            padding: 14px;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+
+        .usage-item {
+            margin-bottom: 20px;
+        }
+
+        .usage-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .usage-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .usage-label span:first-child {
+            font-weight: 600;
+        }
+
+        .usage-label span:last-child {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        .usage-bar {
+            height: 8px;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .usage-bar-fill {
+            height: 100%;
+            background: var(--account-gradient);
+            border-radius: 6px;
+            transition: width 0.3s;
+        }
+
+        #company-usage-list {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-account-primary {
+            background: var(--account-gradient);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .btn-account-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .save-feedback {
+            display: inline-block;
+            margin-left: 15px;
+            color: var(--success);
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .save-feedback.show {
+            opacity: 1;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .plans-intro {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 50px auto;
+        }
+
+        .plans-intro .app-badge {
+            margin-bottom: 20px;
+        }
+
+        .plans-intro h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .plans-intro p {
+            color: var(--text-dim);
+            font-size: 1.05rem;
+        }
+
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .plan-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 35px 25px;
+            text-align: center;
+            position: relative;
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .plan-card.current {
+            border-color: var(--account-accent);
+        }
+
+        .plan-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .plan-price {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: var(--account-accent);
+        }
+
+        .plan-description {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .plan-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 0;
+            flex: 1;
+        }
+
+        .plan-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        .plan-features li i {
+            color: var(--account-accent);
+            margin-top: 3px;
+        }
+
+        .plan-current-badge {
+            display: block;
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .plan-select-btn {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .custom-plan-inputs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .custom-plan-inputs label {
+            flex: 1;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+
+        .custom-plan-inputs input {
+            width: 100%;
+            margin-top: 6px;
+            padding: 10px;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .custom-plan-inputs input:focus {
+            outline: none;
+            border-color: var(--account-accent);
+        }
+
+        .plan-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 17, 21, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 1001;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            overflow-y: auto;
+        }
+
+        .plan-modal-overlay.active {
+            display: flex;
+        }
+
+        .plan-modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 1240px;
+            padding: 40px;
+            position: relative;
+        }
+
+        .plan-modal-close {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .plan-modal-close:hover {
+            color: var(--text-main);
+        }
+
+        .plan-modal-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .plan-modal-subtitle {
+            color: var(--text-dim);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 480px) {
+            .plan-modal-box {
+                padding: 60px 18px 30px 18px;
+            }
+        }
+
+        .guest-cta {
+            text-align: center;
+        }
+
+        .guest-cta p {
+            color: var(--text-dim);
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 768px) {
+            .account-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 22px;
+            }
+
+            .account-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .plans-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .plans-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .custom-plan-inputs {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="container">
+            <a href="../index.html" class="logo">
+                <div class="logo-text">
+                    <h1>Alembro</h1>
+                </div>
+            </a>
+            <button id="logout-btn" class="btn-outline"><i class="fas fa-right-from-bracket"></i> Sair</button>
+        </nav>
+    </header>
+
+    <main class="container" id="page-main" style="display: none;">
+        <div id="account-view">
+            <div class="account-header">
+                <div class="account-avatar" id="account-avatar"></div>
+                <div class="account-header-text">
+                    <h2 id="account-user-name"></h2>
+                    <p id="account-user-email"></p>
+                    <span class="app-badge" id="account-app-badge"></span>
+                </div>
+            </div>
+
+            <div class="account-grid">
+                <div class="card" id="subscription-card">
+                    <h3><i class="fas fa-file-invoice-dollar"></i> Assinatura</h3>
+                    <div id="subscription-content"></div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-receipt"></i> Histórico de Faturas</h3>
+                    <ul class="invoice-list" id="invoice-list"></ul>
+                </div>
+
+                <div class="card full-width">
+                    <h3><i class="fas fa-building"></i> Empresas</h3>
+                    <div class="usage-item">
+                        <div class="usage-label">
+                            <span>Empresas utilizadas</span>
+                            <span id="companies-usage-text"></span>
+                        </div>
+                        <div class="usage-bar">
+                            <div class="usage-bar-fill" id="companies-usage-fill"></div>
+                        </div>
+                    </div>
+                    <div id="company-usage-list"></div>
+                </div>
+
+                <div class="card full-width">
+                    <h3><i class="fas fa-user-gear"></i> Dados da Conta</h3>
+                    <form id="account-form">
+                        <div class="account-form-group">
+                            <label for="field-name">Nome</label>
+                            <input type="text" id="field-name" required>
+                        </div>
+                        <div class="account-form-group">
+                            <label>E-mail</label>
+                            <p class="readonly-field" id="field-email-display"></p>
+                        </div>
+                        <button type="submit" class="btn-account-primary">Salvar alterações</button>
+                        <span class="save-feedback" id="save-feedback"><i class="fas fa-check"></i> Alterações
+                            salvas</span>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="guest-view">
+            <div class="plans-intro">
+                <span class="app-badge" id="guest-app-badge"></span>
+                <h2>Conheça os planos do Alembro FLOW</h2>
+                <p>Você está navegando como visitante.</p>
+            </div>
+
+            <div class="plans-grid" id="plans-grid"></div>
+
+            <div class="guest-cta">
+                <p>Não tem uma conta? Acesse o Alembro FLOW e crie uma.</p>
+            </div>
+        </div>
+    </main>
+
+    <div class="plan-modal-overlay" id="plan-modal-overlay">
+        <div class="plan-modal-box">
+            <button class="plan-modal-close" id="plan-modal-close" aria-label="Fechar">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="plan-modal-title">Alterar plano</h3>
+            <p class="plan-modal-subtitle">Todos os planos do Alembro FLOW são mensais. Escolha o novo plano da sua
+                conta.</p>
+            <div class="plans-grid" id="change-plan-grid"></div>
+        </div>
+    </div>
+
+    <script src="../services/mock-data.js"></script>
+    <script>
+        const {
+            APPS, PLANS, formatBRL, calcularPrecoPersonalizado,
+            mockLogin, getMockSession, saveMockSession, clearMockSession,
+        } = window.AlembroMockData;
+
+        const pageMain = document.getElementById('page-main');
+        const accountView = document.getElementById('account-view');
+        const guestView = document.getElementById('guest-view');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const appKeyFromUrl = urlParams.get('app');
+        const isGuest = urlParams.get('guest') === '1';
+
+        // Monta o HTML de um card de plano. Em modo "info" (tela de
+        // visitante) é só ilustrativo; em modo "select" (modal "Alterar
+        // plano") ganha botão de seleção e, no caso do Personalizado, os
+        // campos pra calcular o preço na hora.
+        function planCardHTML(plan, { mode, currentPlanId } = { mode: 'info' }) {
+            const isCurrent = mode === 'select' && plan.id === currentPlanId;
+
+            if (plan.id === 'personalizado') {
+                const precoTexto = mode === 'select'
+                    ? `${formatBRL(calcularPrecoPersonalizado(1, 2))}/mês`
+                    : 'Sob consulta';
+                return `
+                    <div class="plan-card${isCurrent ? ' current' : ''}" data-plan-id="personalizado">
+                        <h3>${plan.nome}</h3>
+                        <div class="plan-price"${mode === 'select' ? ' data-custom-price' : ''}>${precoTexto}</div>
+                        <p class="plan-description">${plan.descricao}</p>
+                        ${mode === 'select' ? `
+                            <div class="custom-plan-inputs">
+                                <label>Empresas
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" value="1"
+                                        class="custom-empresas-input">
+                                </label>
+                                <label>Usuários
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" value="2"
+                                        class="custom-usuarios-input">
+                                </label>
+                            </div>
+                        ` : ''}
+                        <ul class="plan-features">
+                            ${plan.recursos.map(r => `<li><i class="fas fa-check-circle"></i> ${r}</li>`).join('')}
+                        </ul>
+                        ${mode === 'select'
+                        ? (isCurrent
+                            ? '<span class="plan-current-badge">Plano atual</span>'
+                            : '<button type="button" class="btn-account-primary plan-select-btn" data-plan-id="personalizado">Selecionar</button>')
+                        : ''}
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="plan-card${isCurrent ? ' current' : ''}">
+                    <h3>${plan.nome}</h3>
+                    <div class="plan-price">${formatBRL(plan.preco)}/mês</div>
+                    <p class="plan-description">${plan.descricao}</p>
+                    <ul class="plan-features">
+                        ${plan.recursos.map(r => `<li><i class="fas fa-check-circle"></i> ${r}</li>`).join('')}
+                    </ul>
+                    ${mode === 'select'
+                    ? (isCurrent
+                        ? '<span class="plan-current-badge">Plano atual</span>'
+                        : `<button type="button" class="btn-account-primary plan-select-btn" data-plan-id="${plan.id}">Selecionar</button>`)
+                    : ''}
+                </div>
+            `;
+        }
+
+        function updateCustomPriceInGrid(grid) {
+            const empresasInput = grid.querySelector('.custom-empresas-input');
+            const usuariosInput = grid.querySelector('.custom-usuarios-input');
+            const priceEl = grid.querySelector('[data-custom-price]');
+            if (!empresasInput || !usuariosInput || !priceEl) return;
+
+            const empresas = Math.max(1, parseInt(empresasInput.value, 10) || 1);
+            const usuarios = Math.max(2, parseInt(usuariosInput.value, 10) || 2);
+            priceEl.textContent = `${formatBRL(calcularPrecoPersonalizado(empresas, usuarios))}/mês`;
+        }
+
+        function renderPlans(appKey) {
+            const badge = document.getElementById('guest-app-badge');
+            const app = APPS[appKey];
+            badge.innerHTML = `<i class="fas ${app.icon}"></i> ${app.name}`;
+
+            const grid = document.getElementById('plans-grid');
+            grid.innerHTML = (PLANS[appKey] || []).map(plan => planCardHTML(plan, { mode: 'info' })).join('');
+        }
+
+        if (isGuest && appKeyFromUrl && APPS[appKeyFromUrl]) {
+            // Visitante: não cria sessão nenhuma, só mostra os planos do app
+            // escolhido no modal de login. "Criar minha conta" manda de volta
+            // pro modal de registro em index.html.
+            document.body.classList.add(appKeyFromUrl === 'flow' ? 'theme-flow' : 'theme-stock');
+            pageMain.style.display = 'block';
+            accountView.style.display = 'none';
+            guestView.style.display = 'block';
+            renderPlans(appKeyFromUrl);
+
+            logoutBtn.innerHTML = '<i class="fas fa-arrow-left"></i> Voltar';
+            logoutBtn.addEventListener('click', () => {
+                window.location.href = '../index.html';
+            });
+        } else {
+            // A sessão salva (localStorage) tem prioridade sobre a query
+            // string (?app=flow|stock), que só entra como recuperação: em
+            // file:// o localStorage pode ficar isolado por arquivo
+            // dependendo do navegador, então sem ela cai pra um login mock
+            // genérico daquele app em vez de travar a página.
+            let session = getMockSession() || ((appKeyFromUrl && APPS[appKeyFromUrl])
+                ? mockLogin(appKeyFromUrl)
+                : null);
+
+            if (!session) {
+                window.location.href = '../index.html';
+            } else {
+                saveMockSession(session);
+                const { user } = session;
+                const app = APPS[user.appKey];
+
+                document.body.classList.add(app.key === 'flow' ? 'theme-flow' : 'theme-stock');
+                pageMain.style.display = 'block';
+                accountView.style.display = 'block';
+                guestView.style.display = 'none';
+
+                document.getElementById('account-avatar').textContent = user.name.charAt(0).toUpperCase();
+                document.getElementById('account-user-name').textContent = user.name;
+                document.getElementById('account-user-email').textContent = user.email;
+
+                const badge = document.getElementById('account-app-badge');
+                badge.innerHTML = `<i class="fas ${app.icon}"></i> ${app.name}`;
+
+                function renderSubscription() {
+                    const content = document.getElementById('subscription-content');
+                    const sub = user.subscription;
+
+                    if (sub.planoId === 'trial') {
+                        const msPerDay = 24 * 60 * 60 * 1000;
+                        const diasRestantes = Math.ceil((new Date(sub.trialEndsAt).getTime() - Date.now()) / msPerDay);
+
+                        content.innerHTML = diasRestantes > 0 ? `
+                            <div class="subscription-notice">
+                                <p>Você ainda não tem nenhum plano ativo.</p>
+                                <p>Restam <span class="trial-days">${diasRestantes} ${diasRestantes === 1 ? 'dia' : 'dias'}</span> do seu teste gratuito.</p>
+                            </div>
+                            <button type="button" class="btn-account-primary" id="change-plan-btn" style="width: 100%;">Assinar agora</button>
+                        ` : `
+                            <div class="subscription-notice expired">
+                                <p>Seu teste gratuito acabou.</p>
+                                <p>Volte a trabalhar conosco!</p>
+                            </div>
+                            <button type="button" class="btn-account-primary" id="change-plan-btn" style="width: 100%;">Assinar agora</button>
+                        `;
+                        return;
+                    }
+
+                    content.innerHTML = `
+                        <div class="sub-row"><span>Plano</span><span>${sub.plano}</span></div>
+                        <div class="sub-row"><span>Valor</span><span>${sub.valor}</span></div>
+                        <div class="sub-row"><span>Próxima cobrança</span><span>${sub.proximaCobranca}</span></div>
+                        <div class="sub-row"><span>Status</span><span>
+                            <span class="status-pill status-${sub.status}">${sub.status === 'ativa' ? 'Ativa' : 'Cancelada'}</span>
+                        </span></div>
+                        <button type="button" class="btn-account-primary" id="change-plan-btn"
+                            style="width: 100%; margin-top: 18px;">Alterar plano</button>
+                    `;
+                }
+                renderSubscription();
+
+                const invoiceList = document.getElementById('invoice-list');
+                if (user.invoices.length === 0) {
+                    invoiceList.innerHTML = '<li style="color: var(--text-dim); font-size: 0.9rem;">Nenhuma fatura ainda.</li>';
+                } else {
+                    user.invoices.forEach(inv => {
+                        const li = document.createElement('li');
+                        li.className = 'invoice-item';
+                        li.innerHTML = `
+                            <div>
+                                <div class="invoice-id">${inv.id}</div>
+                                <div class="invoice-date">${inv.data}</div>
+                            </div>
+                            <div class="invoice-right">
+                                <span class="invoice-value">${inv.valor}</span>
+                                <span class="status-pill status-${inv.status.toLowerCase()}">${inv.status}</span>
+                            </div>
+                        `;
+                        invoiceList.appendChild(li);
+                    });
+                }
+
+                const companies = user.companies || [];
+                const companiesUsed = companies.length;
+                const companiesLimit = user.companiesLimit || companiesUsed || 1;
+                const companiesPct = Math.min(100, (companiesUsed / companiesLimit) * 100);
+
+                document.getElementById('companies-usage-text').textContent = `${companiesUsed} de ${companiesLimit}`;
+                document.getElementById('companies-usage-fill').style.width = `${companiesPct}%`;
+
+                const companyUsageList = document.getElementById('company-usage-list');
+                companies.forEach(c => {
+                    const usersPct = Math.min(100, (c.usersUsed / c.usersLimit) * 100);
+                    const item = document.createElement('div');
+                    item.className = 'usage-item';
+                    item.innerHTML = `
+                        <div class="usage-label">
+                            <span>${c.nome}</span>
+                            <span>${c.usersUsed} de ${c.usersLimit} usuários</span>
+                        </div>
+                        <div class="usage-bar">
+                            <div class="usage-bar-fill" style="width: ${usersPct}%;"></div>
+                        </div>
+                    `;
+                    companyUsageList.appendChild(item);
+                });
+
+                document.getElementById('field-name').value = user.name;
+                document.getElementById('field-email-display').textContent = user.email;
+
+                document.getElementById('account-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    // Aqui entraria a chamada real de atualização via services/api.js.
+                    // Por enquanto só atualiza a sessão mock em localStorage pra manter
+                    // o estado durante a demo.
+                    user.name = document.getElementById('field-name').value;
+                    saveMockSession(session);
+
+                    document.getElementById('account-user-name').textContent = user.name;
+                    document.getElementById('account-avatar').textContent = user.name.charAt(0).toUpperCase();
+
+                    const feedback = document.getElementById('save-feedback');
+                    feedback.classList.add('show');
+                    setTimeout(() => feedback.classList.remove('show'), 2000);
+                });
+
+                // Modal "Alterar plano" — troca o plano da assinatura mock.
+                // Aqui entraria a chamada real de troca de plano/checkout via
+                // services/api.js + um gateway de pagamento; por enquanto só
+                // atualiza a sessão local, mas o cálculo de preço (inclusive
+                // do Personalizado) já sai certo.
+                const changePlanOverlay = document.getElementById('plan-modal-overlay');
+                const changePlanGrid = document.getElementById('change-plan-grid');
+
+                function openChangePlanModal() {
+                    changePlanGrid.innerHTML = PLANS.flow
+                        .map(plan => planCardHTML(plan, { mode: 'select', currentPlanId: user.subscription.planoId }))
+                        .join('');
+                    changePlanOverlay.classList.add('active');
+                }
+
+                function closeChangePlanModal() {
+                    changePlanOverlay.classList.remove('active');
+                }
+
+                // Delegado no card (não no botão direto): o botão é
+                // recriado a cada renderSubscription(), então um listener
+                // preso nele se perderia depois da primeira troca de plano.
+                document.getElementById('subscription-card').addEventListener('click', (e) => {
+                    if (e.target.closest('#change-plan-btn')) openChangePlanModal();
+                });
+                document.getElementById('plan-modal-close').addEventListener('click', closeChangePlanModal);
+                changePlanOverlay.addEventListener('click', (e) => {
+                    if (e.target === changePlanOverlay) closeChangePlanModal();
+                });
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && changePlanOverlay.classList.contains('active')) closeChangePlanModal();
+                });
+
+                changePlanGrid.addEventListener('input', (e) => {
+                    if (e.target.matches('.custom-empresas-input, .custom-usuarios-input')) {
+                        // Campo de texto, não number — só aceita dígitos, sem
+                        // a setinha padrão (feia) do input[type=number].
+                        const digitsOnly = e.target.value.replace(/[^0-9]/g, '');
+                        if (digitsOnly !== e.target.value) e.target.value = digitsOnly;
+                        updateCustomPriceInGrid(changePlanGrid);
+                    }
+                });
+
+                changePlanGrid.addEventListener('click', (e) => {
+                    const btn = e.target.closest('.plan-select-btn');
+                    if (!btn) return;
+
+                    const planId = btn.dataset.planId;
+                    if (planId === 'personalizado') {
+                        const empresas = Math.max(1, parseInt(changePlanGrid.querySelector('.custom-empresas-input').value, 10) || 1);
+                        const usuarios = Math.max(2, parseInt(changePlanGrid.querySelector('.custom-usuarios-input').value, 10) || 2);
+                        const preco = calcularPrecoPersonalizado(empresas, usuarios);
+                        user.subscription.planoId = 'personalizado';
+                        user.subscription.plano = `Personalizado (${empresas} ${empresas === 1 ? 'empresa' : 'empresas'}, ${usuarios} usuários)`;
+                        user.subscription.valor = `${formatBRL(preco)}/mês`;
+                    } else {
+                        const plan = PLANS.flow.find(p => p.id === planId);
+                        user.subscription.planoId = plan.id;
+                        user.subscription.plano = plan.nome;
+                        user.subscription.valor = `${formatBRL(plan.preco)}/mês`;
+                    }
+
+                    // Quem estava sem plano (trial) ganha uma data de próxima
+                    // cobrança só pra não deixar "—" depois de assinar.
+                    if (user.subscription.proximaCobranca === '—') {
+                        const proxima = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+                        const dd = String(proxima.getDate()).padStart(2, '0');
+                        const mm = String(proxima.getMonth() + 1).padStart(2, '0');
+                        user.subscription.proximaCobranca = `${dd}/${mm}/${proxima.getFullYear()}`;
+                    }
+
+                    saveMockSession(session);
+                    renderSubscription();
+                    closeChangePlanModal();
+                });
+
+                logoutBtn.addEventListener('click', () => {
+                    clearMockSession();
+                    window.location.href = '../index.html';
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

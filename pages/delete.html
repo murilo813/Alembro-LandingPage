@@ -214,6 +214,17 @@
             font-size: 1.1rem;
         }
 
+        .delete-header .apps-tag {
+            display: inline-block;
+            margin-top: 18px;
+            background: rgba(59, 130, 246, 0.12);
+            color: var(--primary);
+            font-size: 0.85rem;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
         .step {
             display: none;
             animation: fadeIn 0.4s ease-in-out;
@@ -403,6 +414,8 @@
             <div class="delete-header">
                 <h1>Solicitação de Exclusão</h1>
                 <p>Escolha a opção que melhor se aplica ao seu caso para remover seus dados de nossos sistemas.</p>
+                <span class="apps-tag"><i class="fas fa-mobile-screen-button"></i> Válido para contas do Alembro APP
+                    e Alembro STOCK</span>
             </div>
 
             <div id="step-choice" class="step active">
