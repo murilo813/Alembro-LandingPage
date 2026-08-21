@@ -140,6 +140,55 @@
     return apiRequest("/web/plans", { method: "GET" });
   }
 
+  /**
+   * Assinatura atual do usuário, ou `null` se ele nunca assinou. Continua
+   * vindo preenchida depois de cancelar, enquanto o período pago não
+   * acabar (`ativaAte` no futuro, `status: "cancelada"`).
+   *
+   * @param {string} token
+   * @returns {Promise<{planoSlug: string, planoNome: string, precoCentavos: number, status: string, empresasContratadas: number|null, usuariosContratados: number|null, ativaAte: string|null, canceladaEm: string|null}|null>}
+   */
+  function getWebSubscription(token) {
+    return apiRequest("/web/subscription", {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
+
+  /**
+   * Inicia a assinatura de um plano. Devolve a URL do checkout da
+   * AbacatePay, pra onde o usuário precisa ser mandado pra pagar.
+   *
+   * **Não manda valor nenhum de propósito** — o preço é calculado no
+   * backend a partir da tabela de planos. `empresas`/`usuarios` só são
+   * usados quando o plano é o Personalizado.
+   *
+   * @param {string} token
+   * @param {string} planSlug
+   * @param {{empresas?: number, usuarios?: number}} [extras]
+   * @returns {Promise<{checkoutUrl: string}>}
+   */
+  function subscribeToPlan(token, planSlug, extras = {}) {
+    return apiRequest("/web/subscribe", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ planSlug, ...extras }),
+    });
+  }
+
+  /**
+   * Cancela a assinatura. O acesso continua até o fim do período já pago
+   * — o backend não corta na hora.
+   *
+   * @param {string} token
+   */
+  function cancelWebSubscription(token) {
+    return apiRequest("/web/cancel_subscription", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
+
   global.AlembroAPI = {
     sendContactLead,
     webLogin,
@@ -147,5 +196,8 @@
     getWebCompanies,
     updateWebUser,
     getWebPlans,
+    getWebSubscription,
+    subscribeToPlan,
+    cancelWebSubscription,
   };
 })(window);

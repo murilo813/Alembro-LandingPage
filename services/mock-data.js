@@ -1,15 +1,12 @@
 /**
  * services/mock-data.js
  *
- * Login e sessão do Alembro FLOW já são reais (ver services/api.js,
- * POST /web/login e GET /web/session). O que ainda é fake aqui é tudo que
- * depende de cobrança/assinatura, que o backend ainda não tem: plano
- * atual, uso de empresas/usuários e histórico de faturas. `buildAccountSession()`
- * é o ponto de junção — pega a identidade real (nome/e-mail/token, vindos
- * do login) e anexa esse pacote de dados fake por cima, no mesmo formato
- * que pages/conta.html já espera. Quando existir cobrança de verdade, a
- * ideia é trocar só o `ACCOUNT_TEMPLATE` por uma chamada real, sem mexer
- * no HTML/CSS do painel.
+ * Apesar do nome, **não sobrou nenhum dado fake aqui** — login, sessão,
+ * empresas, planos e assinatura são todos reais (ver services/api.js). O
+ * que restou são utilitários do site: metadados visuais dos apps
+ * (`APPS`), formatação de moeda, o cálculo do plano Personalizado e os
+ * wrappers de sessão em localStorage. O nome do arquivo (e a chave
+ * `alembro-mock-session`) ficaram por compatibilidade.
  *
  * Exposto como `window.AlembroMockData` (script comum, sem import/export)
  * pra funcionar também quando o site é aberto direto como arquivo local
@@ -66,34 +63,16 @@
     );
   }
 
-  // Só o plano em si (nome/valor/faturas) ainda é fake — o backend não tem
-  // cobrança ainda. Empresas/uso e o status de assinante/trial já vêm reais
-  // (services/api.js — getWebCompanies, webLogin/validateWebSession).
-  // Anexado por cima da identidade real (nome/e-mail) em buildAccountSession().
-  const ACCOUNT_TEMPLATE = {
-    subscription: {
-      planoId: "multi",
-      plano: "Multi",
-      valor: "R$ 99,90/mês",
-      proximaCobranca: "05/09/2026",
-      status: "ativa",
-    },
-    invoices: [
-      { id: "INV-1042", data: "05/08/2026", valor: "R$ 99,90", status: "Paga" },
-      { id: "INV-1029", data: "05/07/2026", valor: "R$ 99,90", status: "Paga" },
-      { id: "INV-1015", data: "05/06/2026", valor: "R$ 99,90", status: "Paga" },
-      { id: "INV-1001", data: "05/05/2026", valor: "R$ 99,90", status: "Paga" },
-    ],
-  };
-
   const SESSION_KEY = "alembro-mock-session";
 
   /**
    * Monta a sessão salva localmente a partir de uma resposta real de
-   * login/sessão (services/api.js) + o pacote de dados fake de assinatura.
-   * Cada sessão recebe sua própria cópia do template (não uma referência
-   * compartilhada), já que o painel edita `subscription` in-place ao
-   * trocar de plano.
+   * login/sessão (services/api.js).
+   *
+   * Não anexa mais nenhum dado fake: plano/assinatura vêm de
+   * `GET /web/subscription`, empresas de `GET /web/companies` e o status
+   * de assinante do próprio login — tudo mesclado depois, em
+   * pages/conta.html.
    *
    * @param {string} token
    * @param {{userId: number, name: string, email: string}} identity
@@ -107,7 +86,6 @@
         name: identity.name,
         email: identity.email,
         appKey: "flow",
-        ...JSON.parse(JSON.stringify(ACCOUNT_TEMPLATE)),
       },
     };
   }

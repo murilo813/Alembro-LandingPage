@@ -393,6 +393,47 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
 
+        .btn-account-primary:disabled,
+        .btn-account-secondary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Ação destrutiva (cancelar): discreta por padrão, só ganha o
+           vermelho no hover — não compete com o CTA principal. */
+        .btn-account-secondary {
+            background: transparent;
+            color: var(--text-dim);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .btn-account-secondary:hover:not(:disabled) {
+            color: #ef4444;
+            border-color: #ef444455;
+            background: #ef444410;
+        }
+
+        .subscription-error {
+            display: none;
+            margin: 12px 0 0;
+            color: #ef4444;
+            font-size: 0.88rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .subscription-error.show {
+            display: block;
+        }
+
         .save-feedback {
             display: inline-block;
             margin-left: 15px;
@@ -752,6 +793,7 @@
             <h3 class="plan-modal-title">Alterar plano</h3>
             <p class="plan-modal-subtitle">Todos os planos do Alembro FLOW são mensais. Escolha o novo plano da sua
                 conta.</p>
+            <p class="subscription-error" id="plan-modal-error"></p>
             <div class="plans-grid" id="change-plan-grid"></div>
         </div>
     </div>
@@ -763,7 +805,20 @@
             APPS, formatBRL, calcularPrecoPersonalizado,
             buildAccountSession, getMockSession, saveMockSession, clearMockSession,
         } = window.AlembroMockData;
-        const { validateWebSession, getWebCompanies, updateWebUser, getWebPlans } = window.AlembroAPI;
+        const {
+            validateWebSession, getWebCompanies, updateWebUser, getWebPlans,
+            getWebSubscription, subscribeToPlan, cancelWebSubscription,
+        } = window.AlembroAPI;
+
+        function formatCentavos(centavos) {
+            return formatBRL(centavos / 100);
+        }
+
+        function formatData(iso) {
+            if (!iso) return '—';
+            const d = new Date(iso);
+            return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+        }
 
         // Catálogo de planos do Alembro FLOW, vindo de GET /web/plans (tabela
         // `planos` no backend) em vez de chumbado aqui. Carregado uma vez
@@ -791,6 +846,13 @@
         const appKeyFromUrl = urlParams.get('app');
         const isGuest = urlParams.get('guest') === '1';
         const tokenFromUrl = urlParams.get('token');
+
+        // A AbacatePay devolve o usuário pra cá depois do checkout. Isso é
+        // só uma dica de UI ("mostre 'confirmando'") — não prova pagamento
+        // nenhum: qualquer um pode digitar essa URL. Quem libera acesso é
+        // o webhook, no backend.
+        let aguardandoPagamento = urlParams.get('assinatura') === 'processando';
+
         if (tokenFromUrl) {
             // Tira o token da URL o quanto antes (não deixa um JWT parado
             // na barra de endereço/histórico mais tempo que o necessário).
@@ -937,6 +999,11 @@
                         usersLimit: c.usersLimit,
                     }));
 
+                    // Assinatura real (GET /web/subscription): null se ele
+                    // nunca assinou. Vem preenchida mesmo depois de
+                    // cancelar, enquanto o período pago não acabar.
+                    session.user.subscription = await getWebSubscription(session.token);
+
                     saveMockSession(session);
                 } catch (err) {
                     // Antes isso voltava pro login em silêncio — sem erro
@@ -968,10 +1035,23 @@
                     const content = document.getElementById('subscription-content');
                     const sub = user.subscription;
 
-                    // subscriber/trialEndsAt são reais (vêm do backend); o
-                    // plano em si (nome/valor/faturas) ainda é mock, porque
-                    // não existe cobrança de verdade ainda.
-                    if (!user.subscriber) {
+                    // Volta do checkout: o pagamento é confirmado por
+                    // webhook, não pelo redirect do navegador, então aqui
+                    // só mostramos "processando" e ficamos revalidando a
+                    // sessão até o backend confirmar (ver aguardarConfirmacao).
+                    if (aguardandoPagamento) {
+                        content.innerHTML = `
+                            <div class="subscription-notice">
+                                <p>Confirmando seu pagamento...</p>
+                                <p>Isso costuma levar alguns segundos.</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    // Sem assinatura: mostra o trial (dado real, vem de
+                    // usuarios.data_fim_teste) e o CTA de assinar.
+                    if (!user.subscriber || !sub) {
                         const msPerDay = 24 * 60 * 60 * 1000;
                         const diasRestantes = user.trialEndsAt
                             ? Math.ceil((new Date(user.trialEndsAt).getTime() - Date.now()) / msPerDay)
@@ -993,39 +1073,81 @@
                         return;
                     }
 
+                    const cancelada = sub.status === 'cancelada';
+                    // Cancelar não corta o acesso na hora: o backend mantém
+                    // até o fim do período já pago (`ativaAte`).
+                    const rotuloData = cancelada ? 'Acesso até' : 'Próxima cobrança';
+
+                    const nomeExibido = sub.planoSlug === 'personalizado' && sub.empresasContratadas
+                        ? `${sub.planoNome} (${sub.empresasContratadas} ${sub.empresasContratadas === 1 ? 'empresa' : 'empresas'}, ${sub.usuariosContratados} usuários)`
+                        : sub.planoNome;
+
                     content.innerHTML = `
-                        <div class="sub-row"><span>Plano</span><span>${sub.plano}</span></div>
-                        <div class="sub-row"><span>Valor</span><span>${sub.valor}</span></div>
-                        <div class="sub-row"><span>Próxima cobrança</span><span>${sub.proximaCobranca}</span></div>
+                        <div class="sub-row"><span>Plano</span><span>${nomeExibido}</span></div>
+                        <div class="sub-row"><span>Valor</span><span>${formatCentavos(sub.precoCentavos)}/mês</span></div>
+                        <div class="sub-row"><span>${rotuloData}</span><span>${formatData(sub.ativaAte)}</span></div>
                         <div class="sub-row"><span>Status</span><span>
-                            <span class="status-pill status-${sub.status}">${sub.status === 'ativa' ? 'Ativa' : 'Cancelada'}</span>
+                            <span class="status-pill status-${cancelada ? 'cancelada' : 'ativa'}">${cancelada ? 'Cancelada' : 'Ativa'}</span>
                         </span></div>
-                        <button type="button" class="btn-account-primary" id="change-plan-btn"
-                            style="width: 100%; margin-top: 18px;">Alterar plano</button>
+                        ${cancelada ? `
+                            <div class="subscription-notice" style="margin-top: 14px;">
+                                <p>Sua assinatura foi cancelada e não será renovada.</p>
+                                <p>Você continua com acesso até ${formatData(sub.ativaAte)}.</p>
+                            </div>
+                            <button type="button" class="btn-account-primary" id="change-plan-btn"
+                                style="width: 100%; margin-top: 14px;">Assinar novamente</button>
+                        ` : `
+                            <button type="button" class="btn-account-primary" id="change-plan-btn"
+                                style="width: 100%; margin-top: 18px;">Alterar plano</button>
+                            <button type="button" class="btn-account-secondary" id="cancel-plan-btn"
+                                style="width: 100%; margin-top: 10px;">Cancelar assinatura</button>
+                        `}
+                        <p class="subscription-error" id="subscription-error"></p>
                     `;
                 }
-                renderSubscription();
 
-                const invoiceList = document.getElementById('invoice-list');
-                if (!user.subscriber || user.invoices.length === 0) {
-                    invoiceList.innerHTML = '<li style="color: var(--text-dim); font-size: 0.9rem;">Nenhuma fatura ainda.</li>';
-                } else {
-                    user.invoices.forEach(inv => {
-                        const li = document.createElement('li');
-                        li.className = 'invoice-item';
-                        li.innerHTML = `
-                            <div>
-                                <div class="invoice-id">${inv.id}</div>
-                                <div class="invoice-date">${inv.data}</div>
-                            </div>
-                            <div class="invoice-right">
-                                <span class="invoice-value">${inv.valor}</span>
-                                <span class="status-pill status-${inv.status.toLowerCase()}">${inv.status}</span>
-                            </div>
-                        `;
-                        invoiceList.appendChild(li);
-                    });
+                // Fica revalidando a sessão até o webhook do gateway
+                // confirmar o pagamento. É por isso que o acesso nunca é
+                // liberado pelo simples retorno do navegador: quem manda é
+                // o backend, e ele só sabe quando a AbacatePay avisa.
+                async function aguardarConfirmacao() {
+                    const limite = Date.now() + 2 * 60 * 1000;
+
+                    while (aguardandoPagamento && Date.now() < limite) {
+                        await new Promise(r => setTimeout(r, 3000));
+                        try {
+                            const fresh = await validateWebSession(session.token);
+                            session.token = fresh.token;
+                            user.subscriber = fresh.subscriber;
+
+                            if (fresh.subscriber) {
+                                user.subscription = await getWebSubscription(session.token);
+                                aguardandoPagamento = false;
+                                saveMockSession(session);
+                                renderSubscription();
+                                return;
+                            }
+                        } catch (err) {
+                            console.error('Falha ao confirmar pagamento:', err);
+                        }
+                    }
+
+                    // Estourou o tempo: não significa que falhou, só que
+                    // demorou mais que o esperado. Mostra o estado atual em
+                    // vez de deixar o "confirmando..." pra sempre.
+                    aguardandoPagamento = false;
+                    renderSubscription();
                 }
+
+                renderSubscription();
+                if (aguardandoPagamento) aguardarConfirmacao();
+
+                // Histórico de faturas ainda não existe no backend: a
+                // AbacatePay tem os recibos do lado dela, mas não há rota
+                // nossa que os liste. Quando existir, a chamada real entra
+                // aqui (services/api.js) alimentando esta mesma lista.
+                document.getElementById('invoice-list').innerHTML =
+                    '<li style="color: var(--text-dim); font-size: 0.9rem;">Nenhuma fatura ainda.</li>';
 
                 const companies = user.companies || [];
                 const companiesUsed = companies.length;
@@ -1088,22 +1210,24 @@
                     }
                 });
 
-                // Modal "Alterar plano" — troca o plano da assinatura mock.
-                // Aqui entraria a chamada real de troca de plano/checkout via
-                // services/api.js + um gateway de pagamento; por enquanto só
-                // atualiza a sessão local, mas o cálculo de preço (inclusive
-                // do Personalizado) já sai certo.
+                // Modal "Alterar plano" / "Assinar": lista os planos reais e
+                // manda pro checkout da AbacatePay.
                 const changePlanOverlay = document.getElementById('plan-modal-overlay');
                 const changePlanGrid = document.getElementById('change-plan-grid');
+                const planModalError = document.getElementById('plan-modal-error');
 
                 async function openChangePlanModal() {
-                    // Sem assinatura real, nenhum plano do mock deveria
-                    // aparecer marcado como "atual".
-                    const currentPlanId = user.subscriber ? user.subscription.planoId : null;
+                    // Só marca "Plano atual" se a assinatura estiver ativa —
+                    // uma cancelada (ainda dentro do período pago) pode ser
+                    // reassinada, então o botão precisa continuar clicável.
+                    const currentPlanId = user.subscription && user.subscription.status === 'ativa'
+                        ? user.subscription.planoSlug
+                        : null;
                     const plans = await loadFlowPlans();
                     changePlanGrid.innerHTML = plans
                         .map(plan => planCardHTML(plan, { mode: 'select', currentPlanId }))
                         .join('');
+                    planModalError.classList.remove('show');
                     changePlanOverlay.classList.add('active');
                 }
 
@@ -1136,43 +1260,65 @@
                     }
                 });
 
-                changePlanGrid.addEventListener('click', (e) => {
+                // Selecionar um plano abre o checkout da AbacatePay. Só a
+                // *intenção* (plano + quantidades) vai pro backend — o
+                // valor é recalculado lá a partir da tabela de planos, e
+                // nada que sair daqui influencia quanto o cliente paga.
+                changePlanGrid.addEventListener('click', async (e) => {
                     const btn = e.target.closest('.plan-select-btn');
                     if (!btn) return;
 
-                    const wasSubscriber = user.subscriber;
-                    const planId = btn.dataset.planId;
-                    if (planId === 'personalizado') {
+                    const planSlug = btn.dataset.planId;
+                    const extras = {};
+                    if (planSlug === 'personalizado') {
                         const plan = flowPlans.find(p => p.slug === 'personalizado');
-                        const empresas = Math.max(plan.empresasIncluidas, parseInt(changePlanGrid.querySelector('.custom-empresas-input').value, 10) || plan.empresasIncluidas);
-                        const usuarios = Math.max(plan.usuariosIncluidos, parseInt(changePlanGrid.querySelector('.custom-usuarios-input').value, 10) || plan.usuariosIncluidos);
-                        const preco = calcularPrecoPersonalizado(plan, empresas, usuarios);
-                        user.subscription.planoId = 'personalizado';
-                        user.subscription.plano = `Personalizado (${empresas} ${empresas === 1 ? 'empresa' : 'empresas'}, ${usuarios} usuários)`;
-                        user.subscription.valor = `${formatBRL(preco)}/mês`;
-                    } else {
-                        const plan = flowPlans.find(p => p.slug === planId);
-                        user.subscription.planoId = plan.slug;
-                        user.subscription.plano = plan.nome;
-                        user.subscription.valor = `${formatBRL(plan.precoMensal)}/mês`;
+                        extras.empresas = Math.max(plan.empresasIncluidas, parseInt(changePlanGrid.querySelector('.custom-empresas-input').value, 10) || plan.empresasIncluidas);
+                        extras.usuarios = Math.max(plan.usuariosIncluidos, parseInt(changePlanGrid.querySelector('.custom-usuarios-input').value, 10) || plan.usuariosIncluidos);
                     }
 
-                    // Ainda mock: "assinar" aqui só atualiza o estado local
-                    // (localStorage), não o `assinante` real no banco — isso
-                    // exige um gateway de pagamento de verdade, que ainda
-                    // não existe. Quem não era assinante ganha uma data de
-                    // próxima cobrança nova, já que antes não tinha nenhuma.
-                    user.subscriber = true;
-                    if (!wasSubscriber) {
-                        const proxima = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-                        const dd = String(proxima.getDate()).padStart(2, '0');
-                        const mm = String(proxima.getMonth() + 1).padStart(2, '0');
-                        user.subscription.proximaCobranca = `${dd}/${mm}/${proxima.getFullYear()}`;
+                    const textoOriginal = btn.innerText;
+                    btn.innerText = 'Abrindo pagamento...';
+                    btn.disabled = true;
+                    planModalError.classList.remove('show');
+
+                    try {
+                        const { checkoutUrl } = await subscribeToPlan(session.token, planSlug, extras);
+                        window.location.href = checkoutUrl;
+                    } catch (err) {
+                        planModalError.textContent = err.message || 'Não foi possível iniciar o pagamento.';
+                        planModalError.classList.add('show');
+                        btn.innerText = textoOriginal;
+                        btn.disabled = false;
+                    }
+                });
+
+                // Cancelar: o backend cancela no gateway mas mantém o
+                // acesso até o fim do período já pago.
+                document.getElementById('subscription-card').addEventListener('click', async (e) => {
+                    if (!e.target.closest('#cancel-plan-btn')) return;
+
+                    if (!confirm('Cancelar a assinatura? Você continua com acesso até o fim do período já pago, e não haverá nova cobrança.')) {
+                        return;
                     }
 
-                    saveMockSession(session);
-                    renderSubscription();
-                    closeChangePlanModal();
+                    const btn = e.target.closest('#cancel-plan-btn');
+                    btn.innerText = 'Cancelando...';
+                    btn.disabled = true;
+
+                    try {
+                        await cancelWebSubscription(session.token);
+                        user.subscription = await getWebSubscription(session.token);
+                        saveMockSession(session);
+                        renderSubscription();
+                    } catch (err) {
+                        const erro = document.getElementById('subscription-error');
+                        if (erro) {
+                            erro.textContent = err.message || 'Não foi possível cancelar.';
+                            erro.classList.add('show');
+                        }
+                        btn.innerText = 'Cancelar assinatura';
+                        btn.disabled = false;
+                    }
                 });
 
                 logoutBtn.addEventListener('click', () => {
@@ -1191,8 +1337,19 @@
                         session.token = refreshed.token;
                         session.user.name = refreshed.name;
                         session.user.email = refreshed.email;
+                        const eraAssinante = session.user.subscriber;
                         session.user.subscriber = refreshed.subscriber;
                         session.user.trialEndsAt = refreshed.trialEndsAt;
+
+                        // Assinatura pode ter mudado por fora (renovação,
+                        // expiração, cancelamento pelo gateway). Rebusca só
+                        // quando o status virou, pra não bater no backend
+                        // à toa a cada ciclo.
+                        if (eraAssinante !== refreshed.subscriber) {
+                            session.user.subscription = await getWebSubscription(session.token);
+                            renderSubscription();
+                        }
+
                         saveMockSession(session);
                     } catch (err) {
                         console.error('Falha ao renovar sessão:', err);
