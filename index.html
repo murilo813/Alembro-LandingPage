@@ -1455,6 +1455,19 @@
             padding: 13px 14px;
         }
 
+        .login-error {
+            display: none;
+            color: #ef4444;
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: -4px;
+            margin-bottom: 14px;
+        }
+
+        .login-error.show {
+            display: block;
+        }
+
         .login-guest-link {
             display: block;
             text-align: center;
@@ -2006,7 +2019,7 @@
                 <h3 class="modal-title" id="login-form-title">Entrar</h3>
                 <p class="modal-subtitle" id="login-form-subtitle">Acesse sua conta</p>
 
-                <form id="mock-login-form">
+                <form id="login-form">
                     <div class="login-form-group">
                         <label for="login-email">E-mail</label>
                         <input type="email" id="login-email" placeholder="voce@empresa.com" required>
@@ -2021,6 +2034,7 @@
                             </button>
                         </div>
                     </div>
+                    <p class="login-error" id="login-error"></p>
                     <button type="submit" class="btn-primary" id="login-submit-btn"
                         style="width: 100%; padding: 14px;">Entrar</button>
                 </form>
@@ -2031,8 +2045,10 @@
     </div>
 
     <script src="services/mock-data.js"></script>
+    <script src="services/api.js"></script>
     <script>
-        const { APPS, mockLogin, saveMockSession, clearMockSession } = window.AlembroMockData;
+        const { APPS, buildAccountSession, saveMockSession, clearMockSession } = window.AlembroMockData;
+        const { webLogin } = window.AlembroAPI;
 
         const openBtn = document.getElementById('open-login-btn');
         const overlay = document.getElementById('login-modal-overlay');
@@ -2044,7 +2060,10 @@
         const formSubtitle = document.getElementById('login-form-subtitle');
         const submitBtn = document.getElementById('login-submit-btn');
         const guestLink = document.getElementById('login-guest-link');
-        const loginForm = document.getElementById('mock-login-form');
+        const loginForm = document.getElementById('login-form');
+        const loginEmailInput = document.getElementById('login-email');
+        const loginPasswordInput = document.getElementById('login-password');
+        const loginError = document.getElementById('login-error');
 
         let selectedApp = null;
 
@@ -2066,22 +2085,11 @@
             selectedApp = appKey;
             const app = APPS[appKey];
             formTitle.textContent = `Entrar — ${app.name}`;
-            formSubtitle.textContent = 'Ambiente de demonstração (dados fictícios)';
+            formSubtitle.textContent = 'Acesse sua conta do Alembro FLOW';
             submitBtn.style.background = app.colorHex;
+            loginError.classList.remove('show');
             stepSelect.style.display = 'none';
             stepForm.style.display = 'block';
-        }
-
-        function goToAccount(appKey) {
-            // Aqui entraria a chamada real de login via services/api.js,
-            // ex: const session = await login(email, senha);
-            const session = mockLogin(appKey);
-            saveMockSession(session);
-            // O app escolhido também vai na URL (não só no localStorage):
-            // em file:// alguns navegadores isolam o localStorage por
-            // arquivo, então a query string garante que o painel sempre
-            // sabe qual conta carregar.
-            window.location.href = `pages/conta.html?app=${appKey}`;
         }
 
         function goToAccountAsGuest(appKey) {
@@ -2121,9 +2129,34 @@
             });
         });
 
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            goToAccount(selectedApp);
+
+            loginError.classList.remove('show');
+            const originalText = submitBtn.innerText;
+            submitBtn.innerText = 'Entrando...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await webLogin(loginEmailInput.value, loginPasswordInput.value);
+                const session = buildAccountSession(response.token, {
+                    userId: response.userId,
+                    name: response.name,
+                    email: response.email,
+                });
+                saveMockSession(session);
+                // O token também vai na URL (não só no localStorage): em
+                // file:// alguns navegadores (Firefox, notadamente) isolam
+                // o localStorage por arquivo, então pages/conta.html não
+                // enxergaria a sessão salva aqui. Não é "reconstruir" nada
+                // — é o mesmo token já pronto, só passado adiante.
+                window.location.href = `pages/conta.html?app=${selectedApp}&token=${encodeURIComponent(response.token)}`;
+            } catch (err) {
+                loginError.textContent = err.message || 'Não foi possível entrar. Tente novamente.';
+                loginError.classList.add('show');
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+            }
         });
 
         guestLink.addEventListener('click', (e) => {
@@ -2142,6 +2175,19 @@
                 btn.setAttribute('aria-label', willShow ? 'Ocultar senha' : 'Mostrar senha');
             });
         });
+
+        // Se pages/conta.html não conseguiu validar a sessão (token expirado,
+        // revogado, backend fora do ar, etc.), ela manda de volta pra cá com
+        // o motivo na URL em vez de falhar em silêncio — abre o modal já no
+        // login do FLOW mostrando essa mensagem.
+        const sessionErrorParam = new URLSearchParams(window.location.search).get('sessionError');
+        if (sessionErrorParam) {
+            openModal();
+            showFormStep('flow');
+            loginError.textContent = sessionErrorParam;
+            loginError.classList.add('show');
+            window.history.replaceState({}, '', window.location.pathname + window.location.hash);
+        }
     </script>
 
     <script>

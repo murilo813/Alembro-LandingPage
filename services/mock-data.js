@@ -1,14 +1,15 @@
 /**
  * services/mock-data.js
  *
- * Dados fake pro fluxo de login + painel de conta (ver pages/conta.html
- * e o modal de login em index.html). Nada aqui é real: sem autenticação,
- * sem persistência de verdade e sem chamada de backend.
- *
- * Quando o backend de contas existir, a ideia é trocar `mockLogin()` por
- * uma chamada real via services/api.js (ex: `login(email, senha)` batendo
- * em POST /auth/login) que devolva um `token` + `user` no mesmo formato
- * usado aqui, sem precisar mexer no HTML/CSS do modal ou do painel.
+ * Login e sessão do Alembro FLOW já são reais (ver services/api.js,
+ * POST /web/login e GET /web/session). O que ainda é fake aqui é tudo que
+ * depende de cobrança/assinatura, que o backend ainda não tem: plano
+ * atual, uso de empresas/usuários e histórico de faturas. `buildAccountSession()`
+ * é o ponto de junção — pega a identidade real (nome/e-mail/token, vindos
+ * do login) e anexa esse pacote de dados fake por cima, no mesmo formato
+ * que pages/conta.html já espera. Quando existir cobrança de verdade, a
+ * ideia é trocar só o `ACCOUNT_TEMPLATE` por uma chamada real, sem mexer
+ * no HTML/CSS do painel.
  *
  * Exposto como `window.AlembroMockData` (script comum, sem import/export)
  * pra funcionar também quando o site é aberto direto como arquivo local
@@ -131,62 +132,49 @@
     ],
   };
 
-  const MOCK_USERS = {
-    flow: {
-      name: "Rafael Andrade",
-      email: "rafael.andrade@exemplo.com",
-      appKey: "flow",
-      companiesLimit: 3,
-      companies: [
-        { nome: "Andrade Distribuidora Ltda.", usersUsed: 2, usersLimit: 2 },
-        { nome: "Andrade Agro Insumos Ltda.", usersUsed: 1, usersLimit: 2 },
-      ],
-      subscription: {
-        planoId: "multi",
-        plano: "Multi",
-        valor: "R$ 99,90/mês",
-        proximaCobranca: "05/09/2026",
-        status: "ativa",
-      },
-      invoices: [
-        { id: "INV-1042", data: "05/08/2026", valor: "R$ 99,90", status: "Paga" },
-        { id: "INV-1029", data: "05/07/2026", valor: "R$ 99,90", status: "Paga" },
-        { id: "INV-1015", data: "05/06/2026", valor: "R$ 99,90", status: "Paga" },
-        { id: "INV-1001", data: "05/05/2026", valor: "R$ 99,90", status: "Paga" },
-      ],
+  // Só o plano em si (nome/valor/faturas) ainda é fake — o backend não tem
+  // cobrança ainda. Empresas/uso e o status de assinante/trial já vêm reais
+  // (services/api.js — getWebCompanies, webLogin/validateWebSession).
+  // Anexado por cima da identidade real (nome/e-mail) em buildAccountSession().
+  const ACCOUNT_TEMPLATE = {
+    subscription: {
+      planoId: "multi",
+      plano: "Multi",
+      valor: "R$ 99,90/mês",
+      proximaCobranca: "05/09/2026",
+      status: "ativa",
     },
-    stock: {
-      name: "Camila Ferreira",
-      email: "camila.ferreira@exemplo.com",
-      company: "Ferreira Agroinsumos S.A.",
-      appKey: "stock",
-      subscription: {
-        plano: "STOCK + APP Integrado",
-        valor: "R$ 219,90/mês",
-        proximaCobranca: "12/09/2026",
-        status: "ativa",
-      },
-      invoices: [
-        { id: "INV-8842", data: "12/08/2026", valor: "R$ 219,90", status: "Paga" },
-        { id: "INV-8811", data: "12/07/2026", valor: "R$ 219,90", status: "Paga" },
-        { id: "INV-8790", data: "12/06/2026", valor: "R$ 219,90", status: "Cancelada" },
-      ],
-    },
+    invoices: [
+      { id: "INV-1042", data: "05/08/2026", valor: "R$ 99,90", status: "Paga" },
+      { id: "INV-1029", data: "05/07/2026", valor: "R$ 99,90", status: "Paga" },
+      { id: "INV-1015", data: "05/06/2026", valor: "R$ 99,90", status: "Paga" },
+      { id: "INV-1001", data: "05/05/2026", valor: "R$ 99,90", status: "Paga" },
+    ],
   };
 
   const SESSION_KEY = "alembro-mock-session";
 
   /**
-   * Simula um login bem-sucedido pro app escolhido.
-   * Não valida e-mail/senha — é só um placeholder até existir backend real.
+   * Monta a sessão salva localmente a partir de uma resposta real de
+   * login/sessão (services/api.js) + o pacote de dados fake de assinatura.
+   * Cada sessão recebe sua própria cópia do template (não uma referência
+   * compartilhada), já que o painel edita `subscription` in-place ao
+   * trocar de plano.
    *
-   * @param {"flow"|"stock"} appKey
+   * @param {string} token
+   * @param {{userId: number, name: string, email: string}} identity
    * @returns {{token: string, user: object}}
    */
-  function mockLogin(appKey) {
+  function buildAccountSession(token, identity) {
     return {
-      token: `mock-token-${appKey}`,
-      user: MOCK_USERS[appKey],
+      token,
+      user: {
+        userId: identity.userId,
+        name: identity.name,
+        email: identity.email,
+        appKey: "flow",
+        ...JSON.parse(JSON.stringify(ACCOUNT_TEMPLATE)),
+      },
     };
   }
 
@@ -222,12 +210,11 @@
 
   global.AlembroMockData = {
     APPS,
-    MOCK_USERS,
     PLANS,
     FLOW_PRICING,
     formatBRL,
     calcularPrecoPersonalizado,
-    mockLogin,
+    buildAccountSession,
     saveMockSession,
     getMockSession,
     clearMockSession,

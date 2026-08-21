@@ -407,6 +407,20 @@
             opacity: 1;
         }
 
+        .save-error {
+            display: inline-block;
+            margin-left: 15px;
+            color: #ef4444;
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .save-error.show {
+            opacity: 1;
+        }
+
         .full-width {
             grid-column: 1 / -1;
         }
@@ -709,6 +723,7 @@
                         <button type="submit" class="btn-account-primary">Salvar alterações</button>
                         <span class="save-feedback" id="save-feedback"><i class="fas fa-check"></i> Alterações
                             salvas</span>
+                        <span class="save-error" id="save-error"></span>
                     </form>
                 </div>
             </div>
@@ -742,11 +757,18 @@
     </div>
 
     <script src="../services/mock-data.js"></script>
+    <script src="../services/api.js"></script>
     <script>
         const {
             APPS, PLANS, formatBRL, calcularPrecoPersonalizado,
-            mockLogin, getMockSession, saveMockSession, clearMockSession,
+            buildAccountSession, getMockSession, saveMockSession, clearMockSession,
         } = window.AlembroMockData;
+        const { validateWebSession, getWebCompanies, updateWebUser } = window.AlembroAPI;
+
+        // Revalida/renova a sessão real a cada X min enquanto a página
+        // fica aberta, pra acompanhar o sliding expiration do token do
+        // site (ver auth::WEB_SESSION_TTL_MINUTES no backend).
+        const SESSION_REFRESH_INTERVAL_MS = 10 * 60 * 1000;
 
         const pageMain = document.getElementById('page-main');
         const accountView = document.getElementById('account-view');
@@ -756,6 +778,12 @@
         const urlParams = new URLSearchParams(window.location.search);
         const appKeyFromUrl = urlParams.get('app');
         const isGuest = urlParams.get('guest') === '1';
+        const tokenFromUrl = urlParams.get('token');
+        if (tokenFromUrl) {
+            // Tira o token da URL o quanto antes (não deixa um JWT parado
+            // na barra de endereço/histórico mais tempo que o necessário).
+            window.history.replaceState({}, '', window.location.pathname + '?app=' + (appKeyFromUrl || '') + window.location.hash);
+        }
 
         // Monta o HTML de um card de plano. Em modo "info" (tela de
         // visitante) é só ilustrativo; em modo "select" (modal "Alterar
@@ -836,8 +864,7 @@
 
         if (isGuest && appKeyFromUrl && APPS[appKeyFromUrl]) {
             // Visitante: não cria sessão nenhuma, só mostra os planos do app
-            // escolhido no modal de login. "Criar minha conta" manda de volta
-            // pro modal de registro em index.html.
+            // escolhido no modal de login. Criar conta é lá no app, não aqui.
             document.body.classList.add(appKeyFromUrl === 'flow' ? 'theme-flow' : 'theme-stock');
             pageMain.style.display = 'block';
             accountView.style.display = 'none';
@@ -849,19 +876,57 @@
                 window.location.href = '../index.html';
             });
         } else {
-            // A sessão salva (localStorage) tem prioridade sobre a query
-            // string (?app=flow|stock), que só entra como recuperação: em
-            // file:// o localStorage pode ficar isolado por arquivo
-            // dependendo do navegador, então sem ela cai pra um login mock
-            // genérico daquele app em vez de travar a página.
-            let session = getMockSession() || ((appKeyFromUrl && APPS[appKeyFromUrl])
-                ? mockLogin(appKeyFromUrl)
-                : null);
+            (async () => {
+                // A sessão salva (localStorage) tem prioridade. Se não tiver
+                // (ex: Firefox em file:// isola localStorage por arquivo —
+                // index.html e pages/conta.html não enxergam o mesmo storage)
+                // e o token veio na URL, usa ele: não é "reconstruir" nada,
+                // é o mesmo token que o login já gerou, só passado adiante.
+                let session = getMockSession();
+                if (!session && tokenFromUrl) {
+                    session = buildAccountSession(tokenFromUrl, { userId: null, name: '', email: '' });
+                }
 
-            if (!session) {
-                window.location.href = '../index.html';
-            } else {
-                saveMockSession(session);
+                if (!session) {
+                    window.location.href = '../index.html';
+                    return;
+                }
+
+                // Confere a sessão real no backend e já renova o token
+                // (sliding expiration — ver GET /web/session). Também é
+                // aqui que a sessão criada a partir do token da URL ganha
+                // nome/e-mail de verdade (o placeholder acima é só provisório),
+                // e busca as empresas reais (só as que o usuário é OWNER —
+                // são as únicas que contam pro limite dele).
+                try {
+                    const fresh = await validateWebSession(session.token);
+                    session.token = fresh.token;
+                    session.user.userId = fresh.userId;
+                    session.user.name = fresh.name;
+                    session.user.email = fresh.email;
+                    session.user.subscriber = fresh.subscriber;
+                    session.user.trialEndsAt = fresh.trialEndsAt;
+
+                    const companiesResp = await getWebCompanies(session.token);
+                    session.user.companiesLimit = companiesResp.companyLimit;
+                    session.user.companies = companiesResp.companies.map(c => ({
+                        nome: c.companyName,
+                        usersUsed: c.usersUsed,
+                        usersLimit: c.usersLimit,
+                    }));
+
+                    saveMockSession(session);
+                } catch (err) {
+                    // Antes isso voltava pro login em silêncio — sem erro
+                    // visível em lugar nenhum, difícil até de diagnosticar.
+                    // Agora manda uma mensagem via query string pro
+                    // index.html mostrar no modal de login.
+                    console.error('Falha ao validar sessão:', err);
+                    clearMockSession();
+                    window.location.href = `../index.html?sessionError=${encodeURIComponent(err.message || 'Sessão expirada.')}`;
+                    return;
+                }
+
                 const { user } = session;
                 const app = APPS[user.appKey];
 
@@ -881,9 +946,14 @@
                     const content = document.getElementById('subscription-content');
                     const sub = user.subscription;
 
-                    if (sub.planoId === 'trial') {
+                    // subscriber/trialEndsAt são reais (vêm do backend); o
+                    // plano em si (nome/valor/faturas) ainda é mock, porque
+                    // não existe cobrança de verdade ainda.
+                    if (!user.subscriber) {
                         const msPerDay = 24 * 60 * 60 * 1000;
-                        const diasRestantes = Math.ceil((new Date(sub.trialEndsAt).getTime() - Date.now()) / msPerDay);
+                        const diasRestantes = user.trialEndsAt
+                            ? Math.ceil((new Date(user.trialEndsAt).getTime() - Date.now()) / msPerDay)
+                            : 0;
 
                         content.innerHTML = diasRestantes > 0 ? `
                             <div class="subscription-notice">
@@ -915,7 +985,7 @@
                 renderSubscription();
 
                 const invoiceList = document.getElementById('invoice-list');
-                if (user.invoices.length === 0) {
+                if (!user.subscriber || user.invoices.length === 0) {
                     invoiceList.innerHTML = '<li style="color: var(--text-dim); font-size: 0.9rem;">Nenhuma fatura ainda.</li>';
                 } else {
                     user.invoices.forEach(inv => {
@@ -963,20 +1033,37 @@
                 document.getElementById('field-name').value = user.name;
                 document.getElementById('field-email-display').textContent = user.email;
 
-                document.getElementById('account-form').addEventListener('submit', (e) => {
+                document.getElementById('account-form').addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    // Aqui entraria a chamada real de atualização via services/api.js.
-                    // Por enquanto só atualiza a sessão mock em localStorage pra manter
-                    // o estado durante a demo.
-                    user.name = document.getElementById('field-name').value;
-                    saveMockSession(session);
 
-                    document.getElementById('account-user-name').textContent = user.name;
-                    document.getElementById('account-avatar').textContent = user.name.charAt(0).toUpperCase();
+                    const saveError = document.getElementById('save-error');
+                    saveError.classList.remove('show');
+                    const newName = document.getElementById('field-name').value;
+                    const saveBtn = e.target.querySelector('button[type=submit]');
+                    const originalText = saveBtn.innerText;
+                    saveBtn.innerText = 'Salvando...';
+                    saveBtn.disabled = true;
 
-                    const feedback = document.getElementById('save-feedback');
-                    feedback.classList.add('show');
-                    setTimeout(() => feedback.classList.remove('show'), 2000);
+                    try {
+                        await updateWebUser(session.token, newName);
+
+                        user.name = newName;
+                        saveMockSession(session);
+
+                        document.getElementById('account-user-name').textContent = user.name;
+                        document.getElementById('account-avatar').textContent = user.name.charAt(0).toUpperCase();
+
+                        const feedback = document.getElementById('save-feedback');
+                        feedback.classList.add('show');
+                        setTimeout(() => feedback.classList.remove('show'), 2000);
+                    } catch (err) {
+                        saveError.textContent = err.message || 'Não foi possível salvar. Tente novamente.';
+                        saveError.classList.add('show');
+                        setTimeout(() => saveError.classList.remove('show'), 4000);
+                    } finally {
+                        saveBtn.innerText = originalText;
+                        saveBtn.disabled = false;
+                    }
                 });
 
                 // Modal "Alterar plano" — troca o plano da assinatura mock.
@@ -988,8 +1075,11 @@
                 const changePlanGrid = document.getElementById('change-plan-grid');
 
                 function openChangePlanModal() {
+                    // Sem assinatura real, nenhum plano do mock deveria
+                    // aparecer marcado como "atual".
+                    const currentPlanId = user.subscriber ? user.subscription.planoId : null;
                     changePlanGrid.innerHTML = PLANS.flow
-                        .map(plan => planCardHTML(plan, { mode: 'select', currentPlanId: user.subscription.planoId }))
+                        .map(plan => planCardHTML(plan, { mode: 'select', currentPlanId }))
                         .join('');
                     changePlanOverlay.classList.add('active');
                 }
@@ -1026,6 +1116,7 @@
                     const btn = e.target.closest('.plan-select-btn');
                     if (!btn) return;
 
+                    const wasSubscriber = user.subscriber;
                     const planId = btn.dataset.planId;
                     if (planId === 'personalizado') {
                         const empresas = Math.max(1, parseInt(changePlanGrid.querySelector('.custom-empresas-input').value, 10) || 1);
@@ -1041,9 +1132,13 @@
                         user.subscription.valor = `${formatBRL(plan.preco)}/mês`;
                     }
 
-                    // Quem estava sem plano (trial) ganha uma data de próxima
-                    // cobrança só pra não deixar "—" depois de assinar.
-                    if (user.subscription.proximaCobranca === '—') {
+                    // Ainda mock: "assinar" aqui só atualiza o estado local
+                    // (localStorage), não o `assinante` real no banco — isso
+                    // exige um gateway de pagamento de verdade, que ainda
+                    // não existe. Quem não era assinante ganha uma data de
+                    // próxima cobrança nova, já que antes não tinha nenhuma.
+                    user.subscriber = true;
+                    if (!wasSubscriber) {
                         const proxima = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
                         const dd = String(proxima.getDate()).padStart(2, '0');
                         const mm = String(proxima.getMonth() + 1).padStart(2, '0');
@@ -1059,7 +1154,28 @@
                     clearMockSession();
                     window.location.href = '../index.html';
                 });
-            }
+
+                // Renovação silenciosa: mantém a sessão viva enquanto a
+                // página estiver aberta, acompanhando o sliding expiration
+                // do token do site (curto de propósito — ver WEB_SESSION_TTL_MINUTES
+                // no backend). Se a sessão cair nesse meio tempo (ex: conta
+                // desativada), manda pro login.
+                setInterval(async () => {
+                    try {
+                        const refreshed = await validateWebSession(session.token);
+                        session.token = refreshed.token;
+                        session.user.name = refreshed.name;
+                        session.user.email = refreshed.email;
+                        session.user.subscriber = refreshed.subscriber;
+                        session.user.trialEndsAt = refreshed.trialEndsAt;
+                        saveMockSession(session);
+                    } catch (err) {
+                        console.error('Falha ao renovar sessão:', err);
+                        clearMockSession();
+                        window.location.href = `../index.html?sessionError=${encodeURIComponent(err.message || 'Sessão expirada.')}`;
+                    }
+                }, SESSION_REFRESH_INTERVAL_MS);
+            })();
         }
     </script>
 </body>
