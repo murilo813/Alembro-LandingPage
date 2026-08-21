@@ -1,1 +1,23 @@
+# Ambiente / segredos
 download/.env
+.env
+.env.local
+services/.env
+
+# Dependências (quando o services/ virar um projeto Node de verdade)
+node_modules/
+package-lock.json
+
+# Build / cache
+dist/
+build/
+.cache/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+*.swp
