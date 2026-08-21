@@ -40,97 +40,31 @@
     },
   };
 
-  // Regras de preço do plano Personalizado do Alembro FLOW. Base = Solo (1
-  // empresa, 2 usuários), e cada empresa/usuário extra soma um valor fixo —
-  // sem os descontos de pacote que Multi e Equipe têm. Todos os planos são
-  // mensais (sem opção anual).
-  const FLOW_PRICING = {
-    baseEmpresas: 1,
-    baseUsuarios: 2,
-    basePreco: 49.9,
-    precoPorEmpresaExtra: 25,
-    precoPorUsuarioExtra: 20,
-  };
-
   function formatBRL(valor) {
     return "R$ " + valor.toFixed(2).replace(".", ",");
   }
 
   /**
-   * Calcula o preço mensal do plano Personalizado: base (1 empresa, 2
-   * usuários) + valor por empresa extra + valor por usuário extra. Não
-   * aplica os descontos de pacote que Multi/Equipe têm — é a fórmula "crua".
+   * Calcula o preço mensal do plano Personalizado: preço base do plano
+   * (empresas/usuários incluídos) + valor por empresa extra + valor por
+   * usuário extra, cadastrados na tabela `planos` do backend (GET
+   * /web/plans) — não aplica os descontos de pacote que Multi/Equipe têm,
+   * é a fórmula "crua".
    *
+   * @param {{precoMensal: number, empresasIncluidas: number, usuariosIncluidos: number, precoEmpresaExtra: number, precoUsuarioExtra: number}} plan
    * @param {number} empresas
    * @param {number} usuarios
    * @returns {number}
    */
-  function calcularPrecoPersonalizado(empresas, usuarios) {
-    const empresasExtras = Math.max(0, empresas - FLOW_PRICING.baseEmpresas);
-    const usuariosExtras = Math.max(0, usuarios - FLOW_PRICING.baseUsuarios);
+  function calcularPrecoPersonalizado(plan, empresas, usuarios) {
+    const empresasExtras = Math.max(0, empresas - plan.empresasIncluidas);
+    const usuariosExtras = Math.max(0, usuarios - plan.usuariosIncluidos);
     return (
-      FLOW_PRICING.basePreco +
-      empresasExtras * FLOW_PRICING.precoPorEmpresaExtra +
-      usuariosExtras * FLOW_PRICING.precoPorUsuarioExtra
+      plan.precoMensal +
+      empresasExtras * plan.precoEmpresaExtra +
+      usuariosExtras * plan.precoUsuarioExtra
     );
   }
-
-  // Planos reais do Alembro FLOW, usados tanto na tela de visitante
-  // (pages/conta.html com ?guest=1) quanto no modal "Alterar plano" de quem
-  // já assina. Sem checkout real ainda — só o cálculo de preço, que já sai
-  // certo pra quando plugar um gateway de pagamento de verdade.
-  const PLANS = {
-    flow: [
-      {
-        id: "solo",
-        nome: "Solo",
-        preco: FLOW_PRICING.basePreco,
-        descricao: "1 empresa, 2 usuários (você + 1)",
-        recursos: [
-          "1 empresa",
-          "2 usuários (você + 1)",
-          "Cadastro de clientes e estoque",
-          "Emissão de pedidos ilimitada",
-        ],
-      },
-      {
-        id: "multi",
-        nome: "Multi",
-        preco: 99.9,
-        descricao: "Até 3 empresas, 2 usuários por empresa",
-        recursos: [
-          "Até 3 empresas",
-          "2 usuários por empresa",
-          "Gestão centralizada entre empresas",
-          "Relatórios por empresa",
-        ],
-      },
-      {
-        id: "equipe",
-        nome: "Equipe",
-        preco: 99.9,
-        descricao: "1 empresa, até 5 usuários",
-        recursos: [
-          "1 empresa",
-          "Até 5 usuários",
-          "Formas de pagamento e usuários ilimitados",
-          "Relatórios gerenciais completos",
-        ],
-      },
-      {
-        id: "personalizado",
-        nome: "Personalizado",
-        preco: null,
-        descricao: "Você escolhe a quantidade de empresas e usuários",
-        recursos: [
-          `Base: ${formatBRL(FLOW_PRICING.basePreco)} (1 empresa, 2 usuários)`,
-          `+ ${formatBRL(FLOW_PRICING.precoPorEmpresaExtra)} por empresa adicional`,
-          `+ ${formatBRL(FLOW_PRICING.precoPorUsuarioExtra)} por usuário adicional`,
-          "Sem os descontos de pacote do Multi/Equipe",
-        ],
-      },
-    ],
-  };
 
   // Só o plano em si (nome/valor/faturas) ainda é fake — o backend não tem
   // cobrança ainda. Empresas/uso e o status de assinante/trial já vêm reais
@@ -210,8 +144,6 @@
 
   global.AlembroMockData = {
     APPS,
-    PLANS,
-    FLOW_PRICING,
     formatBRL,
     calcularPrecoPersonalizado,
     buildAccountSession,

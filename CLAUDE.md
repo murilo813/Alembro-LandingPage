@@ -85,8 +85,7 @@ Fluxo em `pages/conta.html` (fora do modo visitante):
 - `ACCOUNT_TEMPLATE` — só o que ainda é fake (plano atual, faturas), anexado a qualquer usuário real que loga no FLOW. Sem `name`/`email`/empresas/status de assinante — isso tudo vem do backend (identidade do login, empresas de `GET /web/companies`, `subscriber`/`trialEndsAt` de `/web/login` e `/web/session`).
 - `buildAccountSession(token, { userId, name, email })` — monta a sessão salva a partir de uma resposta real de login/sessão (`services/api.js`) + uma cópia própria do `ACCOUNT_TEMPLATE` (cópia, não referência — o painel edita `subscription` in-place ao trocar de plano). Empresas/`companiesLimit`/`subscriber`/`trialEndsAt` são mescladas por cima depois, não fazem parte deste template.
 - `saveMockSession` / `getMockSession` / `clearMockSession` — wrappers de `localStorage` com try/catch (não quebram o fluxo se `localStorage` não estiver disponível).
-- `PLANS.flow` — os 4 planos reais (Solo, Multi, Equipe, Personalizado).
-- `FLOW_PRICING` / `calcularPrecoPersonalizado(empresas, usuarios)` / `formatBRL(valor)` — fórmula do plano Personalizado: base R$49,90 (1 empresa, 2 usuários) + R$25 por empresa extra + R$20 por usuário extra, sem os descontos de pacote que Multi/Equipe têm. Todos os planos são mensais.
+- `calcularPrecoPersonalizado(plan, empresas, usuarios)` / `formatBRL(valor)` — fórmula do plano Personalizado: preço base do `plan` (empresas/usuários incluídos, vindos de `GET /web/plans`) + valor por empresa extra + valor por usuário extra, sem os descontos de pacote que Multi/Equipe têm. Todos os planos são mensais. Antes recebia só `(empresas, usuarios)` e lia uma constante local (`FLOW_PRICING`); agora recebe o objeto do plano porque os valores vêm do banco (`services/api.js`, `getWebPlans()`), não são mais chumbados aqui.
 
 ### Funções principais (`services/api.js`)
 
@@ -94,6 +93,7 @@ Fluxo em `pages/conta.html` (fora do modo visitante):
 - `validateWebSession(token)` → `GET /web/session`. Renova o token (sliding expiration) e também retorna `subscriber`/`trialEndsAt` atualizados.
 - `getWebCompanies(token)` → `GET /web/companies`. Empresas onde o usuário é OWNER (as únicas que contam contra o limite dele) + `companyLimit`.
 - `updateWebUser(token, name)` → `PUT /web/update_user`. Persiste o nome de verdade no banco.
+- `getWebPlans()` → `GET /web/plans`. Sem autenticação — catálogo de planos (tabela `planos` no backend), cada item com `slug`, `nome`, `descricao`, `precoMensal` (base, no caso do Personalizado), `empresasIncluidas`, `usuariosIncluidos`, `precoEmpresaExtra`/`precoUsuarioExtra` (só preenchidos no Personalizado) e `recursos`. Chamado tanto no modo visitante quanto no modal "Alterar plano" (`pages/conta.html`, `loadFlowPlans()`, cacheado em `flowPlans` pra não rebuscar toda vez que o modal abre).
 - `apiRequest()` (interno) já sabe extrair a mensagem de erro dos dois formatos que o backend usa (`{"detail": "..."}` na maioria das rotas, `{"message": "..."}` no login/sessão).
 
 ### Fluxo no `index.html`
@@ -102,9 +102,9 @@ Modal de login (`#login-modal-overlay`) com 2 passos: seleção de app → login
 
 ### Fluxo no `pages/conta.html`
 
-- **Visitante** (`?guest=1`): mostra os 4 planos, só informativo (sem calculadora interativa — o Personalizado aparece como "Sob consulta"). Sem CTA de criar conta, só o mesmo aviso do login apontando pro app. Não bate no backend.
+- **Visitante** (`?guest=1`): mostra os planos, só informativo (sem calculadora interativa — o Personalizado aparece como "Sob consulta"). Sem CTA de criar conta, só o mesmo aviso do login apontando pro app. Não faz login nenhum, mas **bate em `GET /web/plans`** pra listar os planos (única chamada ao backend nesse modo — é só leitura pública, sem autenticação).
 - **Logado, sem plano (trial)**: card de Assinatura mostra "Restam X dias do teste gratuito" + botão "Assinar agora", ou "Seu teste gratuito acabou" se `trialEndsAt` já passou. Ambos abrem o modal de planos. Estado real agora (`user.subscriber` vindo de `/web/login`/`/web/session`, não mais mock) — confirmado testando com conta real não-assinante.
-- **Logado, com plano**: card de Assinatura normal (plano/valor/próxima cobrança/status) + botão "Alterar plano". O nome/valor/faturas em si continuam mock (`ACCOUNT_TEMPLATE`) — só o *se* o usuário é assinante é real; assinar/trocar plano no modal muda isso localmente (`user.subscriber = true`), não persiste no backend (não existe cobrança lá ainda).
+- **Logado, com plano**: card de Assinatura normal (plano/valor/próxima cobrança/status) + botão "Alterar plano". O plano em si (catálogo, preços) já vem de `GET /web/plans`; o que continua mock é qual plano o usuário tem e as faturas (`ACCOUNT_TEMPLATE`) — só o *se* o usuário é assinante é real; assinar/trocar plano no modal muda isso localmente (`user.subscriber = true`), não persiste no backend (não existe checkout lá ainda).
 - Modal "Alterar plano"/"Assinar" reaproveita a mesma função `planCardHTML()` usada na tela de visitante, em modo `'select'` (mostra botão "Selecionar" ou badge "Plano atual", só quando `user.subscriber` já é `true`). O card Personalizado tem inputs de texto sanitizados (só dígitos, sem o spinner feio do `input[type=number]`) que recalculam o preço ao vivo.
 - **Card "Empresas" mostra uso, não detalhes, e é real.** Vem de `GET /web/companies` — só empresas onde o usuário é `OWNER` (as que ele é admin/usuário comum não contam pro limite dele nem aparecem aqui). Decisão deliberada de UI: nada de CNPJ, nome completo em destaque ou papel/role — só uma barra "X de Y empresas utilizadas" (`user.companiesLimit`, espelha `usuarios.limite_empresas`) e, por empresa, uma barra "X de Y usuários" (`company.usersUsed`/`company.usersLimit`). Não crie/edite empresa pelo site — isso também é só no app.
 - "Dados da Conta" permite editar o Nome e agora persiste de verdade via `PUT /web/update_user` (antes só mudava local) — e-mail é somente leitura.
@@ -115,7 +115,7 @@ Modal de login (`#login-modal-overlay`) com 2 passos: seleção de app → login
 
 Repositório separado em `C:\dev\Alembro\AlembroFLOW\AlembroFLOWbackend` (Rust/Axum + Postgres), já no ar em `https://api.alembro.com`. Esse repo tem seu próprio `CLAUDE.md`, focado só nas rotas `/web/*` usadas por este site — consulte lá para detalhes de implementação (SQL, structs, etc.); aqui é só o resumo do lado do consumidor.
 
-### Rotas do site — conectadas (`/web/login`, `/web/session`, `/web/companies`, `/web/update_user`)
+### Rotas do site — conectadas (`/web/login`, `/web/session`, `/web/companies`, `/web/update_user`, `/web/plans`)
 
 Endpoints próprios pro site, deliberadamente separados de `/login`/`/register_user`/`/update_user`/etc. (usados pelo app mobile):
 
@@ -126,10 +126,19 @@ Endpoints próprios pro site, deliberadamente separados de `/login`/`/register_u
 - `GET /web/companies` retorna só empresas onde o usuário é `OWNER` em `empresas_usuarios` (mesmo filtro que `register_company` já usava pra contar contra `limite_empresas` — empresas onde ele é admin/usuário comum não entram) + o `limite_empresas` do usuário.
 - `PUT /web/update_user` persiste o nome de verdade (`UPDATE usuarios SET nome = ...`) — rota nova, separada do `/update_user` do app (que teria efeitos colaterais indesejados pra uma sessão web, ex: exigir campos de dispositivo).
 - Login e sessão já retornam `subscriber`/`trialEndsAt` reais (`usuarios.assinante`/`usuarios.data_fim_teste`).
+- `GET /web/plans` (sem autenticação, pública) lista o catálogo de planos da tabela `planos` (`ativo = true`, ordenado por `ordem_exibicao`). Ver `WebPlanResponse`/`get_web_plans` em `routes/login.rs`.
+
+### Tabela `planos` e vínculo em `usuarios`
+
+Catálogo de planos, criado em `sql/2026-08-21_planos_e_assinatura.sql` no backend (repo não tem ferramenta de migrations — schema é aplicado rodando SQL manualmente contra o banco, esse arquivo é só o registro do que foi rodado).
+
+- `planos`: `slug` (chave usada pelo front, ex. `'personalizado'` — não confundir com o `id` numérico, que hoje não é usado pela UI), `nome`, `descricao`, `preco_mensal` (preço fixo; no Personalizado é a *base* do cálculo, não "sob consulta"), `empresas_incluidas`/`usuarios_incluidos`, `preco_empresa_extra`/`preco_usuario_extra` (só preenchidos no Personalizado), `recursos` (`TEXT[]`, bullets fixos — os bullets calculados do Personalizado, tipo "+ R$25 por empresa adicional", são montados no front a partir dos preços, não ficam salvos como texto), `ativo`, `ordem_exibicao`.
+- `usuarios` ganhou 4 colunas aditivas (nullable, não mexe em nada que já existia): `id_plano` (FK pra `planos.id`), `plano_empresas_contratadas`/`plano_usuarios_contratados` (só fazem sentido quando `id_plano` aponta pro Personalizado — é a base contratada do cálculo), `plano_atualizado_em`. **Nenhuma rota ainda lê/escreve essas 4 colunas** — a troca de plano no site continua só local (`user.subscription` na sessão), ver "O que ainda falta" abaixo.
+- Deliberadamente **não** existe tabela de histórico de plano — só o estado atual. Se precisar de histórico de trocas/cancelamentos no futuro, é uma tabela nova, não uma alteração destas duas.
 
 ### O que ainda falta (não implementado)
 
-- **Não existe nada de planos/cobrança no backend** — nem catálogo de planos, nem checkout, nem webhook, nem histórico de fatura. Gateway definido: AbacatePay (PIX), ainda não integrado. O card "Assinatura"/"Alterar plano" no site continua mock (nome do plano, valor, faturas) até essa parte existir — só o *status* de assinante (sim/não, trial) é real.
+- **Checkout/cobrança de verdade não existe** — a tabela `planos` e as colunas de plano em `usuarios` existem, mas nenhuma rota liga a troca de plano no site a um pagamento real, não há webhook nem histórico de fatura. Gateway definido: AbacatePay (PIX), ainda não integrado. Card "Assinatura"/"Alterar plano" no site: catálogo de planos já é real (`GET /web/plans`), mas *qual* plano o usuário tem e as faturas continuam mock (`ACCOUNT_TEMPLATE`) — só o *status* de assinante (sim/não, trial) é real.
 - **Site não deve contar como "sessão de app"**: resolvido pro login/sessão/empresas/update_user (nenhum usa `dispositivos`), mas se um dia o site precisar chamar outras rotas operacionais (`Claims` normal), o mesmo cuidado vale — não usar o `WebClaims`/token do site pra acessar rotas de app.
 - **Registro de conta não é feito pelo site** (decisão de produto). No backend, criar empresa continua sendo `POST /register_company`, exige CNPJ/CPF — não tem nada a ver com as rotas do site.
 

@@ -760,10 +760,22 @@
     <script src="../services/api.js"></script>
     <script>
         const {
-            APPS, PLANS, formatBRL, calcularPrecoPersonalizado,
+            APPS, formatBRL, calcularPrecoPersonalizado,
             buildAccountSession, getMockSession, saveMockSession, clearMockSession,
         } = window.AlembroMockData;
-        const { validateWebSession, getWebCompanies, updateWebUser } = window.AlembroAPI;
+        const { validateWebSession, getWebCompanies, updateWebUser, getWebPlans } = window.AlembroAPI;
+
+        // Catálogo de planos do Alembro FLOW, vindo de GET /web/plans (tabela
+        // `planos` no backend) em vez de chumbado aqui. Carregado uma vez
+        // (loadFlowPlans) e reaproveitado tanto na tela de visitante quanto
+        // no modal "Alterar plano".
+        let flowPlans = [];
+        async function loadFlowPlans() {
+            if (flowPlans.length === 0) {
+                flowPlans = await getWebPlans();
+            }
+            return flowPlans;
+        }
 
         // Revalida/renova a sessão real a cada X min enquanto a página
         // fica aberta, pra acompanhar o sliding expiration do token do
@@ -790,12 +802,21 @@
         // plano") ganha botão de seleção e, no caso do Personalizado, os
         // campos pra calcular o preço na hora.
         function planCardHTML(plan, { mode, currentPlanId } = { mode: 'info' }) {
-            const isCurrent = mode === 'select' && plan.id === currentPlanId;
+            const isCurrent = mode === 'select' && plan.slug === currentPlanId;
 
-            if (plan.id === 'personalizado') {
+            if (plan.slug === 'personalizado') {
                 const precoTexto = mode === 'select'
-                    ? `${formatBRL(calcularPrecoPersonalizado(1, 2))}/mês`
+                    ? `${formatBRL(calcularPrecoPersonalizado(plan, plan.empresasIncluidas, plan.usuariosIncluidos))}/mês`
                     : 'Sob consulta';
+                // Bullets calculados a partir do plano (base + valor por
+                // empresa/usuário extra), na frente dos recursos fixos que
+                // vieram do backend (ex: "Sem os descontos de pacote...").
+                const recursosCalculados = [
+                    `Base: ${formatBRL(plan.precoMensal)} (${plan.empresasIncluidas} ${plan.empresasIncluidas === 1 ? 'empresa' : 'empresas'}, ${plan.usuariosIncluidos} usuários)`,
+                    `+ ${formatBRL(plan.precoEmpresaExtra)} por empresa adicional`,
+                    `+ ${formatBRL(plan.precoUsuarioExtra)} por usuário adicional`,
+                    ...plan.recursos,
+                ];
                 return `
                     <div class="plan-card${isCurrent ? ' current' : ''}" data-plan-id="personalizado">
                         <h3>${plan.nome}</h3>
@@ -804,17 +825,17 @@
                         ${mode === 'select' ? `
                             <div class="custom-plan-inputs">
                                 <label>Empresas
-                                    <input type="text" inputmode="numeric" pattern="[0-9]*" value="1"
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" value="${plan.empresasIncluidas}"
                                         class="custom-empresas-input">
                                 </label>
                                 <label>Usuários
-                                    <input type="text" inputmode="numeric" pattern="[0-9]*" value="2"
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" value="${plan.usuariosIncluidos}"
                                         class="custom-usuarios-input">
                                 </label>
                             </div>
                         ` : ''}
                         <ul class="plan-features">
-                            ${plan.recursos.map(r => `<li><i class="fas fa-check-circle"></i> ${r}</li>`).join('')}
+                            ${recursosCalculados.map(r => `<li><i class="fas fa-check-circle"></i> ${r}</li>`).join('')}
                         </ul>
                         ${mode === 'select'
                         ? (isCurrent
@@ -828,7 +849,7 @@
             return `
                 <div class="plan-card${isCurrent ? ' current' : ''}">
                     <h3>${plan.nome}</h3>
-                    <div class="plan-price">${formatBRL(plan.preco)}/mês</div>
+                    <div class="plan-price">${formatBRL(plan.precoMensal)}/mês</div>
                     <p class="plan-description">${plan.descricao}</p>
                     <ul class="plan-features">
                         ${plan.recursos.map(r => `<li><i class="fas fa-check-circle"></i> ${r}</li>`).join('')}
@@ -836,30 +857,31 @@
                     ${mode === 'select'
                     ? (isCurrent
                         ? '<span class="plan-current-badge">Plano atual</span>'
-                        : `<button type="button" class="btn-account-primary plan-select-btn" data-plan-id="${plan.id}">Selecionar</button>`)
+                        : `<button type="button" class="btn-account-primary plan-select-btn" data-plan-id="${plan.slug}">Selecionar</button>`)
                     : ''}
                 </div>
             `;
         }
 
-        function updateCustomPriceInGrid(grid) {
+        function updateCustomPriceInGrid(grid, plan) {
             const empresasInput = grid.querySelector('.custom-empresas-input');
             const usuariosInput = grid.querySelector('.custom-usuarios-input');
             const priceEl = grid.querySelector('[data-custom-price]');
             if (!empresasInput || !usuariosInput || !priceEl) return;
 
-            const empresas = Math.max(1, parseInt(empresasInput.value, 10) || 1);
-            const usuarios = Math.max(2, parseInt(usuariosInput.value, 10) || 2);
-            priceEl.textContent = `${formatBRL(calcularPrecoPersonalizado(empresas, usuarios))}/mês`;
+            const empresas = Math.max(plan.empresasIncluidas, parseInt(empresasInput.value, 10) || plan.empresasIncluidas);
+            const usuarios = Math.max(plan.usuariosIncluidos, parseInt(usuariosInput.value, 10) || plan.usuariosIncluidos);
+            priceEl.textContent = `${formatBRL(calcularPrecoPersonalizado(plan, empresas, usuarios))}/mês`;
         }
 
-        function renderPlans(appKey) {
+        async function renderPlans(appKey) {
             const badge = document.getElementById('guest-app-badge');
             const app = APPS[appKey];
             badge.innerHTML = `<i class="fas ${app.icon}"></i> ${app.name}`;
 
             const grid = document.getElementById('plans-grid');
-            grid.innerHTML = (PLANS[appKey] || []).map(plan => planCardHTML(plan, { mode: 'info' })).join('');
+            const plans = appKey === 'flow' ? await loadFlowPlans() : [];
+            grid.innerHTML = plans.map(plan => planCardHTML(plan, { mode: 'info' })).join('');
         }
 
         if (isGuest && appKeyFromUrl && APPS[appKeyFromUrl]) {
@@ -1074,11 +1096,12 @@
                 const changePlanOverlay = document.getElementById('plan-modal-overlay');
                 const changePlanGrid = document.getElementById('change-plan-grid');
 
-                function openChangePlanModal() {
+                async function openChangePlanModal() {
                     // Sem assinatura real, nenhum plano do mock deveria
                     // aparecer marcado como "atual".
                     const currentPlanId = user.subscriber ? user.subscription.planoId : null;
-                    changePlanGrid.innerHTML = PLANS.flow
+                    const plans = await loadFlowPlans();
+                    changePlanGrid.innerHTML = plans
                         .map(plan => planCardHTML(plan, { mode: 'select', currentPlanId }))
                         .join('');
                     changePlanOverlay.classList.add('active');
@@ -1108,7 +1131,8 @@
                         // a setinha padrão (feia) do input[type=number].
                         const digitsOnly = e.target.value.replace(/[^0-9]/g, '');
                         if (digitsOnly !== e.target.value) e.target.value = digitsOnly;
-                        updateCustomPriceInGrid(changePlanGrid);
+                        const personalizadoPlan = flowPlans.find(p => p.slug === 'personalizado');
+                        updateCustomPriceInGrid(changePlanGrid, personalizadoPlan);
                     }
                 });
 
@@ -1119,17 +1143,18 @@
                     const wasSubscriber = user.subscriber;
                     const planId = btn.dataset.planId;
                     if (planId === 'personalizado') {
-                        const empresas = Math.max(1, parseInt(changePlanGrid.querySelector('.custom-empresas-input').value, 10) || 1);
-                        const usuarios = Math.max(2, parseInt(changePlanGrid.querySelector('.custom-usuarios-input').value, 10) || 2);
-                        const preco = calcularPrecoPersonalizado(empresas, usuarios);
+                        const plan = flowPlans.find(p => p.slug === 'personalizado');
+                        const empresas = Math.max(plan.empresasIncluidas, parseInt(changePlanGrid.querySelector('.custom-empresas-input').value, 10) || plan.empresasIncluidas);
+                        const usuarios = Math.max(plan.usuariosIncluidos, parseInt(changePlanGrid.querySelector('.custom-usuarios-input').value, 10) || plan.usuariosIncluidos);
+                        const preco = calcularPrecoPersonalizado(plan, empresas, usuarios);
                         user.subscription.planoId = 'personalizado';
                         user.subscription.plano = `Personalizado (${empresas} ${empresas === 1 ? 'empresa' : 'empresas'}, ${usuarios} usuários)`;
                         user.subscription.valor = `${formatBRL(preco)}/mês`;
                     } else {
-                        const plan = PLANS.flow.find(p => p.id === planId);
-                        user.subscription.planoId = plan.id;
+                        const plan = flowPlans.find(p => p.slug === planId);
+                        user.subscription.planoId = plan.slug;
                         user.subscription.plano = plan.nome;
-                        user.subscription.valor = `${formatBRL(plan.preco)}/mês`;
+                        user.subscription.valor = `${formatBRL(plan.precoMensal)}/mês`;
                     }
 
                     // Ainda mock: "assinar" aqui só atualiza o estado local

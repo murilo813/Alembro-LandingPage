@@ -129,11 +129,23 @@
     });
   }
 
+  /**
+   * Catálogo de planos do Alembro FLOW (tabela `planos` no backend), com o
+   * valor por empresa/usuário extra do Personalizado. Sem autenticação —
+   * é a mesma lista usada tanto no modo visitante quanto logado.
+   *
+   * @returns {Promise<Array<{id: number, slug: string, nome: string, descricao: string|null, precoMensal: number|null, empresasIncluidas: number, usuariosIncluidos: number, precoEmpresaExtra: number|null, precoUsuarioExtra: number|null, recursos: string[]}>>}
+   */
+  function getWebPlans() {
+    return apiRequest("/web/plans", { method: "GET" });
+  }
+
   global.AlembroAPI = {
     sendContactLead,
     webLogin,
     validateWebSession,
     getWebCompanies,
     updateWebUser,
+    getWebPlans,
   };
 })(window);
