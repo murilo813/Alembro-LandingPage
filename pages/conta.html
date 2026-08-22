@@ -1268,6 +1268,19 @@
                     const btn = e.target.closest('.plan-select-btn');
                     if (!btn) return;
 
+                    // Trocar de plano cancela a assinatura atual na hora, no
+                    // backend, antes mesmo de abrir o checkout novo — não é
+                    // reversível fechando a aba (ver services/api.js e o
+                    // backend). Só existe assinatura atual pra cancelar se
+                    // já tiver uma ativa; primeira assinatura (saindo do
+                    // trial) não tem esse risco.
+                    if (user.subscription && user.subscription.status === 'ativa') {
+                        const seguir = confirm(
+                            'Ao continuar, sua assinatura atual será cancelada imediatamente — mesmo que você feche esta tela sem terminar o pagamento do novo plano. Seu acesso continua até o fim do período já pago, mas a renovação automática é desligada agora. Deseja continuar?'
+                        );
+                        if (!seguir) return;
+                    }
+
                     const planSlug = btn.dataset.planId;
                     const extras = {};
                     if (planSlug === 'personalizado') {
