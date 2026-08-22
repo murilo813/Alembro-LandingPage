@@ -156,6 +156,21 @@
   }
 
   /**
+   * Faturas já pagas, da mais recente pra mais antiga (máx. 24). Só o que
+   * o gateway confirmou — a próxima cobrança não vem daqui, o painel
+   * projeta ela a partir de `ativaAte` de `getWebSubscription()`.
+   *
+   * @param {string} token
+   * @returns {Promise<Array<{id: number, valorCentavos: number, pagoEm: string, formaPagamento: string|null, urlRecibo: string|null}>>}
+   */
+  function getWebInvoices(token) {
+    return apiRequest("/web/invoices", {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
+
+  /**
    * Inicia a assinatura de um plano. Devolve a URL do checkout da
    * AbacatePay, pra onde o usuário precisa ser mandado pra pagar.
    *
@@ -197,6 +212,7 @@
     updateWebUser,
     getWebPlans,
     getWebSubscription,
+    getWebInvoices,
     subscribeToPlan,
     cancelWebSubscription,
   };

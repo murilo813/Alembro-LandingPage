@@ -256,6 +256,23 @@
             color: #ef4444;
         }
 
+        /* Cobrança que ainda não aconteceu: neutra de propósito, pra não
+           parecer um pagamento já confirmado. */
+        .status-pill.status-prevista {
+            background: rgba(148, 163, 184, 0.15);
+            color: var(--text-dim);
+        }
+
+        .invoice-receipt {
+            color: var(--account-accent);
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+
+        .invoice-receipt:hover {
+            text-decoration: underline;
+        }
+
         .invoice-list {
             list-style: none;
         }
@@ -807,7 +824,7 @@
         } = window.AlembroMockData;
         const {
             validateWebSession, getWebCompanies, updateWebUser, getWebPlans,
-            getWebSubscription, subscribeToPlan, cancelWebSubscription,
+            getWebSubscription, getWebInvoices, subscribeToPlan, cancelWebSubscription,
         } = window.AlembroAPI;
 
         function formatCentavos(centavos) {
@@ -818,6 +835,15 @@
             if (!iso) return '—';
             const d = new Date(iso);
             return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+        }
+
+        // `pagoEm` das faturas é data pura ("2026-08-22"), sem hora. Passar
+        // isso pro `new Date()` faz o JS ler como meia-noite UTC e, no fuso
+        // do Brasil, exibir o dia anterior — por isso é formatada na mão.
+        function formatDataPura(data) {
+            if (!data) return '—';
+            const [ano, mes, dia] = data.split('-');
+            return `${dia}/${mes}/${ano}`;
         }
 
         // Catálogo de planos do Alembro FLOW, vindo de GET /web/plans (tabela
@@ -1125,6 +1151,10 @@
                                 aguardandoPagamento = false;
                                 saveMockSession(session);
                                 renderSubscription();
+                                // A fatura da cobrança que acabou de
+                                // confirmar já existe agora — o mesmo
+                                // webhook que liberou o acesso gravou ela.
+                                renderInvoices();
                                 return;
                             }
                         } catch (err) {
@@ -1139,15 +1169,68 @@
                     renderSubscription();
                 }
 
-                renderSubscription();
-                if (aguardandoPagamento) aguardarConfirmacao();
+                // Histórico de faturas: só cobrança que o gateway confirmou
+                // (GET /web/invoices). A "próxima" não vem do backend — é
+                // projetada a partir de `ativaAte`, então aparece marcada
+                // como prevista e nunca tem recibo.
+                async function renderInvoices() {
+                    const lista = document.getElementById('invoice-list');
+                    const vazio = texto =>
+                        `<li style="color: var(--text-dim); font-size: 0.9rem;">${texto}</li>`;
 
-                // Histórico de faturas ainda não existe no backend: a
-                // AbacatePay tem os recibos do lado dela, mas não há rota
-                // nossa que os liste. Quando existir, a chamada real entra
-                // aqui (services/api.js) alimentando esta mesma lista.
-                document.getElementById('invoice-list').innerHTML =
-                    '<li style="color: var(--text-dim); font-size: 0.9rem;">Nenhuma fatura ainda.</li>';
+                    let pagas;
+                    try {
+                        pagas = await getWebInvoices(session.token);
+                    } catch (err) {
+                        lista.innerHTML = vazio('Não foi possível carregar as faturas.');
+                        return;
+                    }
+
+                    const sub = user.subscription;
+                    const linhas = [];
+
+                    // Uma única cobrança futura, e só se a assinatura segue
+                    // ativa: cancelada dentro do período pago não gera
+                    // cobrança nova, então prever uma seria mentira.
+                    if (sub && sub.status === 'ativa' && sub.ativaAte) {
+                        linhas.push(`
+                            <li class="invoice-item">
+                                <div>
+                                    <div class="invoice-id">${formatData(sub.ativaAte)}</div>
+                                    <div class="invoice-date">Próxima cobrança</div>
+                                </div>
+                                <div class="invoice-right">
+                                    <span class="invoice-value">${formatCentavos(sub.precoCentavos)}</span>
+                                    <span class="status-pill status-prevista">Prevista</span>
+                                </div>
+                            </li>
+                        `);
+                    }
+
+                    linhas.push(...pagas.map(f => `
+                        <li class="invoice-item">
+                            <div>
+                                <div class="invoice-id">${formatDataPura(f.pagoEm)}</div>
+                                <div class="invoice-date">${f.formaPagamento === 'CREDIT_CARD' ? 'Cartão de crédito' : 'Pagamento'}</div>
+                            </div>
+                            <div class="invoice-right">
+                                <span class="invoice-value">${formatCentavos(f.valorCentavos)}</span>
+                                ${f.urlRecibo
+                                    ? `<a class="invoice-receipt" href="${f.urlRecibo}" target="_blank" rel="noopener">Recibo</a>`
+                                    : ''}
+                                <span class="status-pill status-paga">Paga</span>
+                            </div>
+                        </li>
+                    `));
+
+                    lista.innerHTML = linhas.length
+                        ? linhas.join('')
+                        : vazio('Nenhuma fatura ainda.');
+                }
+
+                renderSubscription();
+                renderInvoices();
+                if (aguardandoPagamento) aguardarConfirmacao();
 
                 const companies = user.companies || [];
                 const companiesUsed = companies.length;
@@ -1323,6 +1406,9 @@
                         user.subscription = await getWebSubscription(session.token);
                         saveMockSession(session);
                         renderSubscription();
+                        // Sem renovação, não há próxima cobrança a prever —
+                        // a linha "Prevista" precisa sumir da lista.
+                        renderInvoices();
                     } catch (err) {
                         const erro = document.getElementById('subscription-error');
                         if (erro) {
