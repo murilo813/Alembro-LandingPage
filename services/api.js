@@ -14,8 +14,8 @@
  */
 
 (function (global) {
-  // const API_BASE_URL = "https://api.alembro.com";
-  const API_BASE_URL = "http://localhost:5000";
+  // const API_BASE_URL = "http://localhost:5000";
+  const API_BASE_URL = "https://api.alembro.com:5005/flow";
 
   /**
    * Wrapper genérico de fetch: monta a URL, define headers padrão e trata

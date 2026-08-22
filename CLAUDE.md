@@ -144,16 +144,17 @@ Endpoints próprios pro site, deliberadamente separados de `/login`/`/register_u
 
 ### Tabelas de plano e assinatura
 
-Criadas em `sql/2026-08-21_planos_e_assinatura.sql` e `sql/2026-08-21_assinaturas_abacatepay.sql` no backend (repo não tem ferramenta de migrations — schema é aplicado rodando SQL manualmente contra o banco, esses arquivos são só o registro do que foi rodado). Detalhes de implementação estão no `CLAUDE.md` de lá; o resumo do que importa pro site:
+Criadas pelos arquivos em `sql/` no backend (repo não tem ferramenta de migrations — schema é aplicado rodando SQL manualmente contra o banco, esses arquivos são só o registro do que foi rodado). Detalhes de implementação estão no `CLAUDE.md` de lá; o resumo do que importa pro site:
 
-- `planos`: `slug` (chave usada pelo front, ex. `'personalizado'` — não confundir com o `id` numérico, que a UI não usa), `nome`, `descricao`, `preco_mensal` (no Personalizado é a *base* do cálculo, não "sob consulta"), `empresas_incluidas`/`usuarios_incluidos`, `preco_empresa_extra`/`preco_usuario_extra` (só no Personalizado), `recursos` (`TEXT[]`, bullets fixos — os bullets calculados do Personalizado, tipo "+ R$25 por empresa adicional", são montados no front a partir dos preços, não ficam salvos como texto), `ativo`, `ordem_exibicao`, `abacatepay_product_id`.
+- `planos`: `slug` (chave usada pelo front, ex. `'personalizado'` — não confundir com o `id` numérico, que a UI não usa), `nome`, `descricao`, `preco_mensal` (no Personalizado é a *base* do cálculo, não "sob consulta"), `empresas_incluidas`/`usuarios_incluidos`, `preco_empresa_extra`/`preco_usuario_extra` (só no Personalizado), `recursos` (`TEXT[]`, bullets fixos — os bullets calculados do Personalizado, tipo "+ R$25 por empresa adicional", são montados no front a partir dos preços, não ficam salvos como texto), `ativo`, `ordem_exibicao`.
 - `assinaturas` guarda o estado real; `usuarios` ganhou `id_plano`, `plano_empresas_contratadas`/`plano_usuarios_contratados`, `plano_atualizado_em` e `assinatura_ate`.
 - Deliberadamente **não** existe tabela de histórico de plano — `assinaturas` acumula as tentativas, mas não há relatório de trocas. Se precisar, é coisa nova.
 
 ### O que ainda falta (não implementado)
 
 - **Histórico de faturas**: sem rota no backend; o card mostra "Nenhuma fatura ainda" fixo.
-- **A integração com a AbacatePay nunca rodou contra o gateway de verdade.** O que dava pra testar sem eles foi testado (validação de webhook, idempotência, ativação, expiração), mas nenhuma assinatura real foi criada: a loja de teste está sem cartão habilitado e o webhook exige HTTPS público. Ao testar em produção pela primeira vez, o ponto mais provável de ajuste é o formato do payload do webhook — ver a seção correspondente no `CLAUDE.md` do backend.
+- **Nenhum pagamento real foi feito ainda.** A criação de checkout já foi exercitada contra o sandbox da Asaas de verdade, e o webhook foi testado com payloads forjados (autenticação, idempotência, ativação, renovação), mas ninguém passou um cartão de teste ponta a ponta. Ver a seção correspondente no `CLAUDE.md` do backend pro que desconfiar no primeiro teste.
+- **O gateway era AbacatePay e foi trocado por Asaas** (22/08/2026): eles descontinuaram cartão pra contas novas e desativaram o PIX Automático, tornando cobrança recorrente impossível por lá. Do lado do site **nada mudou** — as rotas `/web/subscribe`, `/web/subscription` e `/web/cancel_subscription` têm o mesmo contrato, e `services/api.js` não precisou de uma linha de alteração. A troca ficou toda contida no backend, que é o objetivo de o front nunca falar com o gateway direto.
 - **Site não deve contar como "sessão de app"**: resolvido pro login/sessão/empresas/update_user (nenhum usa `dispositivos`), mas se um dia o site precisar chamar outras rotas operacionais (`Claims` normal), o mesmo cuidado vale — não usar o `WebClaims`/token do site pra acessar rotas de app.
 - **Registro de conta não é feito pelo site** (decisão de produto). No backend, criar empresa continua sendo `POST /register_company`, exige CNPJ/CPF — não tem nada a ver com as rotas do site.
 
