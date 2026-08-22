@@ -48,9 +48,15 @@
    * /web/plans) — não aplica os descontos de pacote que Multi/Equipe têm,
    * é a fórmula "crua".
    *
+   * `usuarios` é **por empresa**, não um total dividido entre elas, então
+   * o valor do usuário extra multiplica pelo número de empresas: cada
+   * assento a mais custa o mesmo, esteja em que empresa estiver. Precisa
+   * bater com `calcular_preco_centavos` no backend — quem decide o valor
+   * cobrado é ele, aqui é só a prévia na tela.
+   *
    * @param {{precoMensal: number, empresasIncluidas: number, usuariosIncluidos: number, precoEmpresaExtra: number, precoUsuarioExtra: number}} plan
    * @param {number} empresas
-   * @param {number} usuarios
+   * @param {number} usuarios usuários por empresa
    * @returns {number}
    */
   function calcularPrecoPersonalizado(plan, empresas, usuarios) {
@@ -59,7 +65,7 @@
     return (
       plan.precoMensal +
       empresasExtras * plan.precoEmpresaExtra +
-      usuariosExtras * plan.precoUsuarioExtra
+      usuariosExtras * plan.precoUsuarioExtra * empresas
     );
   }
 

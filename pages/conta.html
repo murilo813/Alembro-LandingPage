@@ -874,9 +874,9 @@
                 // empresa/usuário extra), na frente dos recursos fixos que
                 // vieram do backend (ex: "Sem os descontos de pacote...").
                 const recursosCalculados = [
-                    `Base: ${formatBRL(plan.precoMensal)} (${plan.empresasIncluidas} ${plan.empresasIncluidas === 1 ? 'empresa' : 'empresas'}, ${plan.usuariosIncluidos} usuários)`,
+                    `Base: ${formatBRL(plan.precoMensal)} (${plan.empresasIncluidas} ${plan.empresasIncluidas === 1 ? 'empresa' : 'empresas'}, ${plan.usuariosIncluidos} usuários por empresa)`,
                     `+ ${formatBRL(plan.precoEmpresaExtra)} por empresa adicional`,
-                    `+ ${formatBRL(plan.precoUsuarioExtra)} por usuário adicional`,
+                    `+ ${formatBRL(plan.precoUsuarioExtra)} por usuário adicional, em cada empresa`,
                     ...plan.recursos,
                 ];
                 return `
@@ -890,7 +890,7 @@
                                     <input type="text" inputmode="numeric" pattern="[0-9]*" value="${plan.empresasIncluidas}"
                                         class="custom-empresas-input">
                                 </label>
-                                <label>Usuários
+                                <label>Usuários por empresa
                                     <input type="text" inputmode="numeric" pattern="[0-9]*" value="${plan.usuariosIncluidos}"
                                         class="custom-usuarios-input">
                                 </label>
@@ -1079,7 +1079,7 @@
                     const rotuloData = cancelada ? 'Acesso até' : 'Próxima cobrança';
 
                     const nomeExibido = sub.planoSlug === 'personalizado' && sub.empresasContratadas
-                        ? `${sub.planoNome} (${sub.empresasContratadas} ${sub.empresasContratadas === 1 ? 'empresa' : 'empresas'}, ${sub.usuariosContratados} usuários)`
+                        ? `${sub.planoNome} (${sub.empresasContratadas} ${sub.empresasContratadas === 1 ? 'empresa' : 'empresas'}, ${sub.usuariosContratados} usuários por empresa)`
                         : sub.planoNome;
 
                     content.innerHTML = `
