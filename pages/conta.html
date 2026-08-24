@@ -831,6 +831,24 @@
             return formatBRL(centavos / 100);
         }
 
+        // `urlRecibo` vem da Asaas via nosso backend — não é entrada do
+        // usuário, mas ainda assim é uma string externa indo parar dentro de
+        // um atributo HTML via innerHTML. Escapa contra fuga do atributo e
+        // exige `https://` explícito pra barrar um `javascript:` disfarçado
+        // (aspas escapadas sozinhas não pegam esse caso, é troca de esquema).
+        function escapeAttr(valor) {
+            return String(valor)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        function urlReciboSegura(url) {
+            return typeof url === 'string' && url.startsWith('https://') ? url : null;
+        }
+
         function formatData(iso) {
             if (!iso) return '—';
             const d = new Date(iso);
@@ -1207,7 +1225,9 @@
                         `);
                     }
 
-                    linhas.push(...pagas.map(f => `
+                    linhas.push(...pagas.map(f => {
+                        const recibo = urlReciboSegura(f.urlRecibo);
+                        return `
                         <li class="invoice-item">
                             <div>
                                 <div class="invoice-id">${formatDataPura(f.pagoEm)}</div>
@@ -1215,13 +1235,14 @@
                             </div>
                             <div class="invoice-right">
                                 <span class="invoice-value">${formatCentavos(f.valorCentavos)}</span>
-                                ${f.urlRecibo
-                                    ? `<a class="invoice-receipt" href="${f.urlRecibo}" target="_blank" rel="noopener">Recibo</a>`
+                                ${recibo
+                                    ? `<a class="invoice-receipt" href="${escapeAttr(recibo)}" target="_blank" rel="noopener">Recibo</a>`
                                     : ''}
                                 <span class="status-pill status-paga">Paga</span>
                             </div>
                         </li>
-                    `));
+                    `;
+                    }));
 
                     lista.innerHTML = linhas.length
                         ? linhas.join('')
