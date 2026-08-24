@@ -35,8 +35,8 @@
     },
   };
 
-  function formatBRL(valor) {
-    return "R$ " + valor.toFixed(2).replace(".", ",");
+  function formatBRL(value) {
+    return "R$ " + value.toFixed(2).replace(".", ",");
   }
 
   /**
@@ -46,24 +46,24 @@
    * /web/plans) — não aplica os descontos de pacote que Multi/Equipe têm,
    * é a fórmula "crua".
    *
-   * `usuarios` é **por empresa**, não um total dividido entre elas, então
+   * `users` é **por empresa**, não um total dividido entre elas, então
    * o valor do usuário extra multiplica pelo número de empresas: cada
    * assento a mais custa o mesmo, esteja em que empresa estiver. Precisa
-   * bater com `calcular_preco_centavos` no backend — quem decide o valor
+   * bater com `calculate_price_cents` no backend — quem decide o valor
    * cobrado é ele, aqui é só a prévia na tela.
    *
-   * @param {{precoMensal: number, empresasIncluidas: number, usuariosIncluidos: number, precoEmpresaExtra: number, precoUsuarioExtra: number}} plan
-   * @param {number} empresas
-   * @param {number} usuarios usuários por empresa
+   * @param {{monthlyPrice: number, includedCompanies: number, includedUsers: number, extraCompanyPrice: number, extraUserPrice: number}} plan
+   * @param {number} companies
+   * @param {number} users usuários por empresa
    * @returns {number}
    */
-  function calcularPrecoPersonalizado(plan, empresas, usuarios) {
-    const empresasExtras = Math.max(0, empresas - plan.empresasIncluidas);
-    const usuariosExtras = Math.max(0, usuarios - plan.usuariosIncluidos);
+  function calculateCustomPlanPrice(plan, companies, users) {
+    const extraCompanies = Math.max(0, companies - plan.includedCompanies);
+    const extraUsers = Math.max(0, users - plan.includedUsers);
     return (
-      plan.precoMensal +
-      empresasExtras * plan.precoEmpresaExtra +
-      usuariosExtras * plan.precoUsuarioExtra * empresas
+      plan.monthlyPrice +
+      extraCompanies * plan.extraCompanyPrice +
+      extraUsers * plan.extraUserPrice * companies
     );
   }
 
@@ -131,7 +131,7 @@
   global.AlembroAccount = {
     APPS,
     formatBRL,
-    calcularPrecoPersonalizado,
+    calculateCustomPlanPrice,
     buildAccountSession,
     saveSession,
     getSession,

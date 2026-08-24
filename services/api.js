@@ -134,7 +134,7 @@
    * valor por empresa/usuário extra do Personalizado. Sem autenticação —
    * é a mesma lista usada tanto no modo visitante quanto logado.
    *
-   * @returns {Promise<Array<{id: number, slug: string, nome: string, descricao: string|null, precoMensal: number|null, empresasIncluidas: number, usuariosIncluidos: number, precoEmpresaExtra: number|null, precoUsuarioExtra: number|null, recursos: string[]}>>}
+   * @returns {Promise<Array<{id: number, slug: string, name: string, description: string|null, monthlyPrice: number|null, includedCompanies: number, includedUsers: number, extraCompanyPrice: number|null, extraUserPrice: number|null, features: string[]}>>}
    */
   function getWebPlans() {
     return apiRequest("/web/plans", { method: "GET" });
@@ -143,10 +143,10 @@
   /**
    * Assinatura atual do usuário, ou `null` se ele nunca assinou. Continua
    * vindo preenchida depois de cancelar, enquanto o período pago não
-   * acabar (`ativaAte` no futuro, `status: "cancelada"`).
+   * acabar (`activeUntil` no futuro, `status: "cancelada"`).
    *
    * @param {string} token
-   * @returns {Promise<{planoSlug: string, planoNome: string, precoCentavos: number, status: string, empresasContratadas: number|null, usuariosContratados: number|null, ativaAte: string|null, canceladaEm: string|null}|null>}
+   * @returns {Promise<{planSlug: string, planName: string, priceCents: number, status: string, contractedCompanies: number|null, contractedUsers: number|null, activeUntil: string|null, canceledAt: string|null}|null>}
    */
   function getWebSubscription(token) {
     return apiRequest("/web/subscription", {
@@ -158,10 +158,10 @@
   /**
    * Faturas já pagas, da mais recente pra mais antiga (máx. 24). Só o que
    * o gateway confirmou — a próxima cobrança não vem daqui, o painel
-   * projeta ela a partir de `ativaAte` de `getWebSubscription()`.
+   * projeta ela a partir de `activeUntil` de `getWebSubscription()`.
    *
    * @param {string} token
-   * @returns {Promise<Array<{id: number, valorCentavos: number, pagoEm: string, formaPagamento: string|null, urlRecibo: string|null}>>}
+   * @returns {Promise<Array<{id: number, amountCents: number, paidOn: string, paymentMethod: string|null, receiptUrl: string|null}>>}
    */
   function getWebInvoices(token) {
     return apiRequest("/web/invoices", {
@@ -175,12 +175,12 @@
    * AbacatePay, pra onde o usuário precisa ser mandado pra pagar.
    *
    * **Não manda valor nenhum de propósito** — o preço é calculado no
-   * backend a partir da tabela de planos. `empresas`/`usuarios` só são
+   * backend a partir da tabela de planos. `companies`/`users` só são
    * usados quando o plano é o Personalizado.
    *
    * @param {string} token
    * @param {string} planSlug
-   * @param {{empresas?: number, usuarios?: number}} [extras]
+   * @param {{companies?: number, users?: number}} [extras]
    * @returns {Promise<{checkoutUrl: string}>}
    */
   function subscribeToPlan(token, planSlug, extras = {}) {
