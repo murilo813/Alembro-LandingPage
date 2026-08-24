@@ -2044,10 +2044,10 @@
         </div>
     </div>
 
-    <script src="services/mock-data.js"></script>
+    <script src="services/account.js"></script>
     <script src="services/api.js"></script>
     <script>
-        const { APPS, buildAccountSession, saveMockSession, clearMockSession } = window.AlembroMockData;
+        const { APPS, buildAccountSession, saveSession, clearSession } = window.AlembroAccount;
         const { webLogin } = window.AlembroAPI;
 
         const openBtn = document.getElementById('open-login-btn');
@@ -2093,7 +2093,7 @@
         }
 
         function goToAccountAsGuest(appKey) {
-            clearMockSession();
+            clearSession();
             window.location.href = `pages/conta.html?app=${appKey}&guest=1`;
         }
 
@@ -2120,8 +2120,8 @@
                 if (appKey === 'app' || appKey === 'stock') {
                     // Alembro APP e Alembro STOCK compartilham a mesma conta e
                     // já têm um fluxo de acesso real (login + gestão de conta)
-                    // em pages/delete.html — não precisa passar pelo login
-                    // mock daqui.
+                    // em pages/delete.html — batendo num backend diferente
+                    // (weberp.alembro.com), não passa pelo login do FLOW aqui.
                     window.location.href = 'pages/delete.html';
                     return;
                 }
@@ -2144,7 +2144,7 @@
                     name: response.name,
                     email: response.email,
                 });
-                saveMockSession(session);
+                saveSession(session);
                 // O token também vai na URL (não só no localStorage): em
                 // file:// alguns navegadores (Firefox, notadamente) isolam
                 // o localStorage por arquivo, então pages/conta.html não

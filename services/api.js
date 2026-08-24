@@ -2,13 +2,13 @@
  * services/api.js
  *
  * Client real pro backend do Alembro FLOW (AlembroFLOWbackend, Rust/Axum
- * em https://api.alembro.com). Login, sessão, empresas (uso real de
- * empresas/usuários) e edição de nome já são reais. O que ainda é mock é
- * só o plano em si (nome do plano, valor, faturas) — ver
- * services/mock-data.js — porque o backend ainda não tem cobrança.
+ * em https://api.alembro.com). Login, sessão, empresas, planos, assinatura
+ * e faturas — tudo aqui bate no backend de verdade, inclusive cobrança via
+ * Asaas. Utilitários que não são chamada de API (formatação, cálculo de
+ * preço, sessão em localStorage) ficam em services/account.js.
  *
  * Exposto como `window.AlembroAPI` (script comum, sem import/export) pelo
- * mesmo motivo do mock-data.js: o site precisa continuar funcionando
+ * mesmo motivo do account.js: o site precisa continuar funcionando
  * quando aberto direto do disco (file://), onde módulos ES são bloqueados
  * pelo navegador.
  */

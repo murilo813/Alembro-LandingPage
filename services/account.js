@@ -1,14 +1,12 @@
 /**
- * services/mock-data.js
+ * services/account.js
  *
- * Apesar do nome, **não sobrou nenhum dado fake aqui** — login, sessão,
- * empresas, planos e assinatura são todos reais (ver services/api.js). O
- * que restou são utilitários do site: metadados visuais dos apps
- * (`APPS`), formatação de moeda, o cálculo do plano Personalizado e os
- * wrappers de sessão em localStorage. O nome do arquivo (e a chave
- * `alembro-mock-session`) ficaram por compatibilidade.
+ * Utilitários do site: metadados visuais dos apps (`APPS`), formatação de
+ * moeda, o cálculo do plano Personalizado e os wrappers de sessão em
+ * localStorage. Login/sessão/empresas/planos/assinatura/faturas em si são
+ * todos reais e vêm de services/api.js — nada aqui é dado fake.
  *
- * Exposto como `window.AlembroMockData` (script comum, sem import/export)
+ * Exposto como `window.AlembroAccount` (script comum, sem import/export)
  * pra funcionar também quando o site é aberto direto como arquivo local
  * (file://), onde módulos ES são bloqueados pelo navegador.
  */
@@ -69,6 +67,10 @@
     );
   }
 
+  // Nome da chave mantido como estava (não "alembro-account-session") de
+  // propósito: é só o rótulo interno do localStorage, ninguém olha esse
+  // valor — renomear derrubaria a sessão de todo mundo já logado sem
+  // nenhum ganho real.
   const SESSION_KEY = "alembro-mock-session";
 
   /**
@@ -100,8 +102,8 @@
   // certas configurações de arquivo local aberto direto via file://), então
   // essas funções falham de forma silenciosa em vez de quebrar o fluxo de
   // login — a navegação entre index.html e pages/conta.html não depende
-  // delas, só usa isso pra manter os dados editados durante a demo.
-  function saveMockSession(session) {
+  // delas, só usa isso pra manter a sessão entre uma página e outra.
+  function saveSession(session) {
     try {
       localStorage.setItem(SESSION_KEY, JSON.stringify(session));
     } catch (err) {
@@ -109,7 +111,7 @@
     }
   }
 
-  function getMockSession() {
+  function getSession() {
     try {
       const raw = localStorage.getItem(SESSION_KEY);
       return raw ? JSON.parse(raw) : null;
@@ -118,7 +120,7 @@
     }
   }
 
-  function clearMockSession() {
+  function clearSession() {
     try {
       localStorage.removeItem(SESSION_KEY);
     } catch (err) {
@@ -126,13 +128,13 @@
     }
   }
 
-  global.AlembroMockData = {
+  global.AlembroAccount = {
     APPS,
     formatBRL,
     calcularPrecoPersonalizado,
     buildAccountSession,
-    saveMockSession,
-    getMockSession,
-    clearMockSession,
+    saveSession,
+    getSession,
+    clearSession,
   };
 })(window);

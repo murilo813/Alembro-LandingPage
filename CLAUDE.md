@@ -16,7 +16,7 @@ assets/
   css/            styles.css — hoje não usado; todo CSS do site é inline em <style> dentro de cada HTML
 services/
   api.js          client real do backend do FLOW (login, sessão, empresas, planos, assinatura, faturas, update de nome) + exemplo pro formulário de contato
-  mock-data.js    apesar do nome, sem dado fake — utilitários (formatação, cálculo de preço, wrappers de localStorage), ver seção abaixo
+  account.js      utilitários (formatação, cálculo de preço, wrappers de localStorage) — não é chamada de API, ver seção abaixo
 ```
 
 Cada página HTML é autocontida: tem seu próprio `<style>` inline com os design tokens redeclarados (não existe um stylesheet compartilhado de fato, apesar de `assets/css/styles.css` existir). Ao criar uma página nova, siga esse padrão — copie os tokens de `:root` de uma página existente em vez de tentar centralizar.
@@ -62,7 +62,7 @@ STOCK e APP compartilham a mesma conta/login e já têm um fluxo real (login + e
 
 ### Por que os scripts não usam `import`/`export`
 
-`services/mock-data.js` e `services/api.js` expõem tudo via `window.AlembroMockData`/`window.AlembroAPI` (IIFE clássica), **não** via ES modules. Isso é proposital: o site precisa continuar funcionando quando alguém abre `index.html` direto do disco (`file://`), e módulos ES são bloqueados por CORS nesse cenário. Scripts comuns (`<script src="...">`, sem `type="module"`) não têm essa restrição.
+`services/account.js` e `services/api.js` expõem tudo via `window.AlembroAccount`/`window.AlembroAPI` (IIFE clássica), **não** via ES modules. Isso é proposital: o site precisa continuar funcionando quando alguém abre `index.html` direto do disco (`file://`), e módulos ES são bloqueados por CORS nesse cenário. Scripts comuns (`<script src="...">`, sem `type="module"`) não têm essa restrição.
 
 **Para testar mudanças, sirva os arquivos por HTTP** (`python -m http.server` na raiz do projeto) em vez de confiar só em abrir o arquivo direto — mais fácil de depurar e mais parecido com produção, embora `file://` também deva continuar funcionando. **Não dispare chamadas reais pro backend de produção (`api.alembro.com`) sem que o dono do projeto peça** — login/sessão já são reais, então testar sem cuidado (ex: automatizando login) bate direto na base de produção.
 
@@ -70,7 +70,7 @@ STOCK e APP compartilham a mesma conta/login e já têm um fluxo real (login + e
 
 A sessão (`{ token, user }`) fica em `localStorage` (`alembro-mock-session` — nome ficou desatualizado mas é o que tem; hoje `user` é 100% dado real vindo do backend).
 
-**Achado real (não hipótese) rodando em Firefox com `file://`**: `index.html` e `pages/conta.html` não enxergam o mesmo `localStorage` — o Firefox isola storage por arquivo em `file://`, diferente de Chrome. Sem tratamento pra isso, o login funcionava (200) e a página até navegava pra `pages/conta.html`, mas lá dentro `getMockSession()` voltava `null` e ela batia em silêncio de volta pro `index.html` — sem erro, sem chamar `/web/session`, dando a impressão de "não faz nada". **Solução**: `index.html` manda o token de sessão também pela URL (`pages/conta.html?app=flow&token=...`) ao navegar depois do login — não é "reconstruir" um JWT a partir da URL (isso de fato não dá), é só levar adiante o mesmo token que o login já gerou. `pages/conta.html` usa esse `token` da URL como fallback quando `getMockSession()` não acha nada, tira o token da URL imediatamente (`history.replaceState`, não deixa JWT parado na barra de endereço) e valida ele contra `/web/session` do mesmo jeito. **Se mexer nesse fluxo de novo, teste em file:// no Firefox de propósito** — é o cenário que expôs isso; testar só via `http://127.0.0.1` (onde storage não é isolado) não pega esse tipo de bug.
+**Achado real (não hipótese) rodando em Firefox com `file://`**: `index.html` e `pages/conta.html` não enxergam o mesmo `localStorage` — o Firefox isola storage por arquivo em `file://`, diferente de Chrome. Sem tratamento pra isso, o login funcionava (200) e a página até navegava pra `pages/conta.html`, mas lá dentro `getSession()` voltava `null` e ela batia em silêncio de volta pro `index.html` — sem erro, sem chamar `/web/session`, dando a impressão de "não faz nada". **Solução**: `index.html` manda o token de sessão também pela URL (`pages/conta.html?app=flow&token=...`) ao navegar depois do login — não é "reconstruir" um JWT a partir da URL (isso de fato não dá), é só levar adiante o mesmo token que o login já gerou. `pages/conta.html` usa esse `token` da URL como fallback quando `getSession()` não acha nada, tira o token da URL imediatamente (`history.replaceState`, não deixa JWT parado na barra de endereço) e valida ele contra `/web/session` do mesmo jeito. **Se mexer nesse fluxo de novo, teste em file:// no Firefox de propósito** — é o cenário que expôs isso; testar só via `http://127.0.0.1` (onde storage não é isolado) não pega esse tipo de bug.
 
 Fluxo em `pages/conta.html` (fora do modo visitante):
 
@@ -79,13 +79,13 @@ Fluxo em `pages/conta.html` (fora do modo visitante):
 3. Sessão válida → mescla nome/e-mail/token/`subscriber`/`trialEndsAt`/`companiesLimit`/`companies`/`subscription` atualizados na sessão salva e renderiza o painel normalmente.
 4. Enquanto a página fica aberta, um `setInterval` (`SESSION_REFRESH_INTERVAL_MS`, 10min) repete o passo 2 (só sessão; não rebusca empresas a cada tick) pra sessão não cair no meio do uso (mesmo tratamento de erro visível). **Só rebusca a assinatura quando `subscriber` muda de valor** — cobre renovação/expiração/cancelamento acontecendo com a página aberta, sem bater no backend à toa a cada ciclo.
 
-### Funções principais (`services/mock-data.js`)
+### Funções principais (`services/account.js`)
 
-**Apesar do nome, não sobrou nenhum dado fake neste arquivo** — login, sessão, empresas, planos, assinatura e faturas são todos reais. O nome do arquivo (e a chave `alembro-mock-session` no `localStorage`) ficaram por compatibilidade; o que resta aqui são utilitários.
+Sem dado fake nenhum — login, sessão, empresas, planos, assinatura e faturas são todos reais (via `services/api.js`); aqui são só utilitários que não são chamada de API. Chamava `mock-data.js` até 24/08/2026 (renomeado por não fazer mais sentido); a chave `alembro-mock-session` no `localStorage` ficou como estava por compatibilidade — trocar derrubaria a sessão de quem já está logado.
 
 - `APPS` — metadados de cada app (nome, cor, ícone).
 - `buildAccountSession(token, { userId, name, email })` — monta a sessão salva a partir de uma resposta real de login/sessão (`services/api.js`). Não anexa mais nada: empresas, `companiesLimit`, `subscriber`/`trialEndsAt` e `subscription` são mesclados depois, em `pages/conta.html`, todos vindos do backend.
-- `saveMockSession` / `getMockSession` / `clearMockSession` — wrappers de `localStorage` com try/catch (não quebram o fluxo se `localStorage` não estiver disponível).
+- `saveSession` / `getSession` / `clearSession` — wrappers de `localStorage` com try/catch (não quebram o fluxo se `localStorage` não estiver disponível). A chave em si (`alembro-mock-session`) ficou com esse nome por compatibilidade — trocar derrubaria a sessão de quem já está logado, sem ganho nenhum.
 - `calcularPrecoPersonalizado(plan, empresas, usuarios)` / `formatBRL(valor)` — fórmula do plano Personalizado: preço base do `plan` (empresas/usuários incluídos, vindos de `GET /web/plans`) + valor por empresa extra + valor por usuário extra, sem os descontos de pacote que Multi/Equipe têm. Todos os planos são mensais. **`usuarios` é por empresa, não um total** (o próprio texto dos planos já diz "2 usuários por empresa") — o valor do usuário extra multiplica pelo número de empresas (5 empresas/5 usuários por empresa = 4 empresas extras + 3 usuários extras **em cada uma das 5**, não 3 ao todo). Tem que bater com `calcular_preco_centavos` no backend, que é quem decide o valor cobrado de verdade — aqui é só a prévia na tela.
 
 ### Funções principais (`services/api.js`)
@@ -112,7 +112,7 @@ Duas regras que valem pra qualquer mexida nessa área:
 
 ### Fluxo no `index.html`
 
-Modal de login (`#login-modal-overlay`) com 2 passos: seleção de app → login (só FLOW; APP/STOCK pulam pro `delete.html`). Senha tem botão de "olhinho". Submit chama `webLogin()` de verdade — mostra "Entrando..." no botão enquanto aguarda e exibe a mensagem de erro do backend (`#login-error`) se falhar (credenciais erradas, conta inativa, etc.). Sucesso → `buildAccountSession()` + `saveMockSession()` + vai pro painel. Abaixo do formulário só um aviso — "Não tem uma conta? Acesse o Alembro FLOW e crie uma." — sem link. "Entrar como visitante" continua 100% mock, não passa pelo backend — manda direto pra `pages/conta.html?app=flow&guest=1`.
+Modal de login (`#login-modal-overlay`) com 2 passos: seleção de app → login (só FLOW; APP/STOCK pulam pro `delete.html`). Senha tem botão de "olhinho". Submit chama `webLogin()` de verdade — mostra "Entrando..." no botão enquanto aguarda e exibe a mensagem de erro do backend (`#login-error`) se falhar (credenciais erradas, conta inativa, etc.). Sucesso → `buildAccountSession()` + `saveSession()` + vai pro painel. Abaixo do formulário só um aviso — "Não tem uma conta? Acesse o Alembro FLOW e crie uma." — sem link. "Entrar como visitante" não passa pelo backend nenhum — manda direto pra `pages/conta.html?app=flow&guest=1`.
 
 ### Fluxo no `pages/conta.html`
 

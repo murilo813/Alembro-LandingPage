@@ -194,7 +194,8 @@
         .sub-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+            gap: 16px;
             padding: 10px 0;
             border-bottom: 1px solid var(--border);
         }
@@ -302,12 +303,23 @@
         .invoice-item .invoice-value {
             font-weight: 700;
             margin-right: 15px;
+            white-space: nowrap;
         }
 
         .invoice-right {
             display: flex;
             align-items: center;
             gap: 15px;
+        }
+
+        /* Recibo embaixo da pill de status, os dois numa coluna só à
+           direita — em vez de lado a lado, que empurrava o valor da fatura
+           pra quebrar linha em telas estreitas. */
+        .invoice-status-col {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
         }
 
         .account-form-group {
@@ -537,6 +549,25 @@
             font-weight: 800;
             margin-bottom: 10px;
             color: var(--account-accent);
+            white-space: nowrap;
+        }
+
+        /* #plans-grid é só a vitrine do visitante (mode: 'info') — o mesmo
+           .plans-grid do modal "Alterar plano" (#change-plan-grid) mora num
+           modal de 1240px e não precisa disso. Aqui o container normal do
+           site (1000px) deixa só ~173px por card em 4 colunas, apertado
+           demais pro preço não quebrar linha — reduz padding/gap/fonte só
+           aqui, o suficiente pra caber numa linha só. */
+        #plans-grid {
+            gap: 14px;
+        }
+
+        #plans-grid .plan-card {
+            padding: 35px 14px;
+        }
+
+        #plans-grid .plan-price {
+            font-size: 1.65rem;
         }
 
         .plan-description {
@@ -595,6 +626,16 @@
             font-size: 0.8rem;
             color: var(--text-dim);
             font-weight: 600;
+        }
+
+        .custom-plan-input-label {
+            /* Reserva altura de 2 linhas mesmo pros labels que cabem numa só
+               ("Empresas" vs "Usuários por empresa") — sem isso o input do
+               label mais curto fica mais alto que o do outro, desalinhados
+               lado a lado. 2 linhas = 2 × line-height (1.6, herdado do
+               body), não 2 × font-size — por isso 3.2em, não 2em. */
+            display: block;
+            min-height: 3.2em;
         }
 
         .custom-plan-inputs input {
@@ -716,6 +757,77 @@
                 gap: 12px;
             }
         }
+
+        /* Confirmação (troca/cancelamento de plano): substitui o confirm()
+           nativo do navegador, que sai com a cara "alembro.com diz" em vez
+           do visual do site. Overlay mais alto que o de planos (1001) pra
+           empilhar por cima quando abre com o modal de planos já aberto. */
+        .confirm-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 17, 21, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 1002;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .confirm-modal-overlay.active {
+            display: flex;
+        }
+
+        .confirm-modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 420px;
+            padding: 28px;
+        }
+
+        .confirm-modal-message {
+            color: var(--text-main);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+        .confirm-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .confirm-modal-actions {
+                flex-direction: column-reverse;
+            }
+
+            .confirm-modal-actions button {
+                width: 100%;
+            }
+        }
+
+        /* Confirmação de ação destrutiva (cancelar assinatura) — sólido,
+           não só o hover vermelho discreto do .btn-account-secondary. */
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
     </style>
 </head>
 
@@ -815,13 +927,23 @@
         </div>
     </div>
 
-    <script src="../services/mock-data.js"></script>
+    <div class="confirm-modal-overlay" id="confirm-modal-overlay">
+        <div class="confirm-modal-box">
+            <p class="confirm-modal-message" id="confirm-modal-message"></p>
+            <div class="confirm-modal-actions">
+                <button type="button" class="btn-account-secondary" id="confirm-modal-cancel">Voltar</button>
+                <button type="button" class="btn-account-primary" id="confirm-modal-ok">Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../services/account.js"></script>
     <script src="../services/api.js"></script>
     <script>
         const {
             APPS, formatBRL, calcularPrecoPersonalizado,
-            buildAccountSession, getMockSession, saveMockSession, clearMockSession,
-        } = window.AlembroMockData;
+            buildAccountSession, getSession, saveSession, clearSession,
+        } = window.AlembroAccount;
         const {
             validateWebSession, getWebCompanies, updateWebUser, getWebPlans,
             getWebSubscription, getWebInvoices, subscribeToPlan, cancelWebSubscription,
@@ -847,6 +969,48 @@
 
         function urlReciboSegura(url) {
             return typeof url === 'string' && url.startsWith('https://') ? url : null;
+        }
+
+        // Substitui window.confirm() (que sai com a cara padrão do
+        // navegador, "alembro.com diz") pelo modal do próprio site.
+        // Resolve true/false igual ao confirm() nativo, só muda a aparência.
+        const confirmModalOverlay = document.getElementById('confirm-modal-overlay');
+        const confirmModalMessage = document.getElementById('confirm-modal-message');
+        const confirmModalOk = document.getElementById('confirm-modal-ok');
+        const confirmModalCancel = document.getElementById('confirm-modal-cancel');
+        let confirmModalResolve = null;
+
+        function fecharConfirmModal(resultado) {
+            confirmModalOverlay.classList.remove('active');
+            if (confirmModalResolve) {
+                confirmModalResolve(resultado);
+                confirmModalResolve = null;
+            }
+        }
+
+        confirmModalOk.addEventListener('click', () => fecharConfirmModal(true));
+        confirmModalCancel.addEventListener('click', () => fecharConfirmModal(false));
+        confirmModalOverlay.addEventListener('click', (e) => {
+            if (e.target === confirmModalOverlay) fecharConfirmModal(false);
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && confirmModalOverlay.classList.contains('active')) fecharConfirmModal(false);
+        });
+
+        /**
+         * @param {string} mensagem
+         * @param {{ okTexto?: string, cancelTexto?: string, destrutivo?: boolean }} [opcoes]
+         * @returns {Promise<boolean>}
+         */
+        function confirmarAcao(mensagem, opcoes = {}) {
+            confirmModalMessage.textContent = mensagem;
+            confirmModalOk.textContent = opcoes.okTexto || 'Continuar';
+            confirmModalCancel.textContent = opcoes.cancelTexto || 'Voltar';
+            confirmModalOk.className = opcoes.destrutivo ? 'btn-danger' : 'btn-account-primary';
+            confirmModalOverlay.classList.add('active');
+            return new Promise((resolve) => {
+                confirmModalResolve = resolve;
+            });
         }
 
         function formatData(iso) {
@@ -930,11 +1094,11 @@
                         <p class="plan-description">${plan.descricao}</p>
                         ${mode === 'select' ? `
                             <div class="custom-plan-inputs">
-                                <label>Empresas
+                                <label><span class="custom-plan-input-label">Empresas</span>
                                     <input type="text" inputmode="numeric" pattern="[0-9]*" value="${plan.empresasIncluidas}"
                                         class="custom-empresas-input">
                                 </label>
-                                <label>Usuários por empresa
+                                <label><span class="custom-plan-input-label">Usuários por empresa</span>
                                     <input type="text" inputmode="numeric" pattern="[0-9]*" value="${plan.usuariosIncluidos}"
                                         class="custom-usuarios-input">
                                 </label>
@@ -1010,7 +1174,7 @@
                 // index.html e pages/conta.html não enxergam o mesmo storage)
                 // e o token veio na URL, usa ele: não é "reconstruir" nada,
                 // é o mesmo token que o login já gerou, só passado adiante.
-                let session = getMockSession();
+                let session = getSession();
                 if (!session && tokenFromUrl) {
                     session = buildAccountSession(tokenFromUrl, { userId: null, name: '', email: '' });
                 }
@@ -1048,14 +1212,14 @@
                     // cancelar, enquanto o período pago não acabar.
                     session.user.subscription = await getWebSubscription(session.token);
 
-                    saveMockSession(session);
+                    saveSession(session);
                 } catch (err) {
                     // Antes isso voltava pro login em silêncio — sem erro
                     // visível em lugar nenhum, difícil até de diagnosticar.
                     // Agora manda uma mensagem via query string pro
                     // index.html mostrar no modal de login.
                     console.error('Falha ao validar sessão:', err);
-                    clearMockSession();
+                    clearSession();
                     window.location.href = `../index.html?sessionError=${encodeURIComponent(err.message || 'Sessão expirada.')}`;
                     return;
                 }
@@ -1167,7 +1331,7 @@
                             if (fresh.subscriber) {
                                 user.subscription = await getWebSubscription(session.token);
                                 aguardandoPagamento = false;
-                                saveMockSession(session);
+                                saveSession(session);
                                 renderSubscription();
                                 // A fatura da cobrança que acabou de
                                 // confirmar já existe agora — o mesmo
@@ -1235,10 +1399,12 @@
                             </div>
                             <div class="invoice-right">
                                 <span class="invoice-value">${formatCentavos(f.valorCentavos)}</span>
-                                ${recibo
-                                    ? `<a class="invoice-receipt" href="${escapeAttr(recibo)}" target="_blank" rel="noopener">Recibo</a>`
-                                    : ''}
-                                <span class="status-pill status-paga">Paga</span>
+                                <div class="invoice-status-col">
+                                    <span class="status-pill status-paga">Paga</span>
+                                    ${recibo
+                                        ? `<a class="invoice-receipt" href="${escapeAttr(recibo)}" target="_blank" rel="noopener">Recibo</a>`
+                                        : ''}
+                                </div>
                             </div>
                         </li>
                     `;
@@ -1296,7 +1462,7 @@
                         await updateWebUser(session.token, newName);
 
                         user.name = newName;
-                        saveMockSession(session);
+                        saveSession(session);
 
                         document.getElementById('account-user-name').textContent = user.name;
                         document.getElementById('account-avatar').textContent = user.name.charAt(0).toUpperCase();
@@ -1379,7 +1545,7 @@
                     // já tiver uma ativa; primeira assinatura (saindo do
                     // trial) não tem esse risco.
                     if (user.subscription && user.subscription.status === 'ativa') {
-                        const seguir = confirm(
+                        const seguir = await confirmarAcao(
                             'Ao continuar, sua assinatura atual será cancelada imediatamente — mesmo que você feche esta tela sem terminar o pagamento do novo plano. Seu acesso continua até o fim do período já pago, mas a renovação automática é desligada agora. Deseja continuar?'
                         );
                         if (!seguir) return;
@@ -1414,7 +1580,11 @@
                 document.getElementById('subscription-card').addEventListener('click', async (e) => {
                     if (!e.target.closest('#cancel-plan-btn')) return;
 
-                    if (!confirm('Cancelar a assinatura? Você continua com acesso até o fim do período já pago, e não haverá nova cobrança.')) {
+                    const seguir = await confirmarAcao(
+                        'Cancelar a assinatura? Você continua com acesso até o fim do período já pago, e não haverá nova cobrança.',
+                        { okTexto: 'Cancelar assinatura', cancelTexto: 'Manter assinatura', destrutivo: true }
+                    );
+                    if (!seguir) {
                         return;
                     }
 
@@ -1425,7 +1595,7 @@
                     try {
                         await cancelWebSubscription(session.token);
                         user.subscription = await getWebSubscription(session.token);
-                        saveMockSession(session);
+                        saveSession(session);
                         renderSubscription();
                         // Sem renovação, não há próxima cobrança a prever —
                         // a linha "Prevista" precisa sumir da lista.
@@ -1442,7 +1612,7 @@
                 });
 
                 logoutBtn.addEventListener('click', () => {
-                    clearMockSession();
+                    clearSession();
                     window.location.href = '../index.html';
                 });
 
@@ -1470,10 +1640,10 @@
                             renderSubscription();
                         }
 
-                        saveMockSession(session);
+                        saveSession(session);
                     } catch (err) {
                         console.error('Falha ao renovar sessão:', err);
-                        clearMockSession();
+                        clearSession();
                         window.location.href = `../index.html?sessionError=${encodeURIComponent(err.message || 'Sessão expirada.')}`;
                     }
                 }, SESSION_REFRESH_INTERVAL_MS);
